@@ -20,6 +20,7 @@ Install [Python](https://www.python.org/) then:
 
 - Run virtual environment:
 ```bash
+python3 -m venv env
 source env/bin/activate
 ```
 
