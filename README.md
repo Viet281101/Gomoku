@@ -31,6 +31,7 @@ pip install requirements.txt
 
 - Run server django:
 ```bash
+cd gomoku_backend/
 python manage.py migrate
 python manage.py runserver
 ```
@@ -39,5 +40,6 @@ python manage.py runserver
 
 - Use `npm` to debug:
 ```bash
+cd gomoku_frontend/
 npm run dev
 ```
