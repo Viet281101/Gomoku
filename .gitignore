@@ -6,10 +6,10 @@ env/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.log
 *.pot
 *.pyc
 local_settings.py
+migrations/
 db.sqlite3
 
 # Logs
