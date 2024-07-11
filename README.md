@@ -9,12 +9,13 @@ The simplicity of the rules contrasts with the game's strategic depth, making it
 
 ### Install & Debug
 
+Install project:
 ```bash
 git clone https://github.com/Viet281101/Gomoku.git
 cd Gomoku/
 ```
 
-#### Backend
+#### Backend (Django)
 
 Install [Python](https://www.python.org/) then:
 
@@ -36,7 +37,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-#### Frontend
+#### Frontend (React TypeScript)
 
 - Use `npm` to debug:
 ```bash
