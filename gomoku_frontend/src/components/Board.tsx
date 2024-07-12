@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface BoardProps {
 	boardSize: number;
@@ -8,6 +8,9 @@ interface BoardProps {
 
 const Board: React.FC<BoardProps> = ({ boardSize, player1, player2 }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
+	const [board, setBoard] = useState<string[][]>(Array(boardSize).fill(null).map(() => Array(boardSize).fill('')));
+	const [currentTurn, setCurrentTurn] = useState<'black' | 'white'>('black');
+	const [winner, setWinner] = useState<string | null>(null);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -34,22 +37,85 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2 }) => {
 					}
 				};
 
-				const drawPiece = (x: number, y: number, color: 'black' | 'white') => {
-					ctx.beginPath();
-					ctx.arc((x + 1) * cellSize, (y + 1) * cellSize, cellSize / 3, 0, 2 * Math.PI);
-					ctx.fillStyle = color;
-					ctx.fill();
-					ctx.stroke();
+				const drawPieces = () => {
+					board.forEach((row, y) => {
+						row.forEach((cell, x) => {
+							if (cell !== '') {
+								ctx.beginPath();
+								ctx.arc((x + 1) * cellSize, (y + 1) * cellSize, cellSize / 3, 0, 2 * Math.PI);
+								ctx.fillStyle = cell;
+								ctx.fill();
+								ctx.stroke();
+							}
+						});
+					});
 				};
 
 				drawBoard();
-				drawPiece(7, 7, 'black');
-				drawPiece(8, 8, 'white');
+				drawPieces();
 			}
 		}
-	}, [boardSize]);
+	}, [board, boardSize]);
 
-	return <canvas ref={canvasRef} width={600} height={600}></canvas>;
+	const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+		if (winner) return;
+
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+
+		const rect = canvas.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+
+		const cellSize = canvas.width / (boardSize + 1);
+		const col = Math.floor(x / cellSize) - 1;
+		const row = Math.floor(y / cellSize) - 1;
+
+		if (col >= 0 && col < boardSize && row >= 0 && row < boardSize && board[row][col] === '') {
+			const newBoard = board.map((r, rowIndex) =>
+				r.map((cell, colIndex) => (rowIndex === row && colIndex === col ? currentTurn : cell))
+			);
+			setBoard(newBoard);
+			if (checkWinner(newBoard, currentTurn, row, col)) {
+				setWinner(currentTurn);
+			} else {
+				setCurrentTurn(currentTurn === 'black' ? 'white' : 'black');
+			}
+		}
+	};
+
+	const checkWinner = (board: string[][], player: string, row: number, col: number): boolean => {
+		const directions = [
+			{ x: 1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 1, y: -1 }
+		];
+
+		const countConsecutive = (dx: number, dy: number): number => {
+			let count = 0;
+			for (let i = -4; i <= 4; i++) {
+				const x = col + i * dx;
+				const y = row + i * dy;
+				if (x >= 0 && x < boardSize && y >= 0 && y < boardSize && board[y][x] === player) {
+					count++;
+					if (count === 5) return count;
+				} else {
+					count = 0;
+				}
+			}
+			return count;
+		};
+
+		for (const { x, y } of directions) {
+			if (countConsecutive(x, y) >= 5) return true;
+		}
+		return false;
+	};
+
+	return (
+		<div>
+			<canvas ref={canvasRef} width={600} height={600} onClick={handleCanvasClick}></canvas>
+			{winner && <p>{winner} wins!</p>}
+		</div>
+	);
 };
 
 export default Board;
