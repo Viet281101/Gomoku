@@ -7,10 +7,14 @@ interface BoardProps {
 }
 
 const Board: React.FC<BoardProps> = ({ board, onClick }) => {
+	if (!board || board.length === 0) return null;
+
 	return (
 		<div className="board">
 		{board.map((row, i) =>
-			row.map((cell, j) => <Cell key={`${i}-${j}`} value={cell} onClick={() => onClick(i, j)} />)
+			row.map((cell, j) => (
+			<Cell key={`${i}-${j}`} value={cell} onClick={() => onClick(i, j)} />
+			))
 		)}
 		</div>
 	);

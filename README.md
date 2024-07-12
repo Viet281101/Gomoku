@@ -31,12 +31,17 @@ source env/bin/activate
 - Install [Django](https://www.djangoproject.com/download/) libraries:
 ```bash
 pip install requirements.txt
+cd gomoku_backend/
+```
+
+- Create & Apply migrations:
+```bash
+python manage.py makemigrations game
+python manage.py migrate
 ```
 
 - Run server django:
 ```bash
-cd gomoku_backend/
-python manage.py migrate
 python manage.py runserver
 ```
 

@@ -3,18 +3,19 @@ import Board from './Board';
 import axios from 'axios';
 
 const Game: React.FC = () => {
-	const [board, setBoard] = useState(Array(15).fill(Array(15).fill(null)));
+	const initialBoard = Array.from({ length: 15 }, () => Array(15).fill(null));
+	const [board, setBoard] = useState<string[][]>(initialBoard);
 	const [currentTurn, setCurrentTurn] = useState('X');
 	const [winner, setWinner] = useState<string | null>(null);
 
 	const fetchData = async () => {
 		try {
-		const result = await axios.get('http://localhost:8000/api/games/');
-		setBoard(result.data.board);
-		setCurrentTurn(result.data.currentTurn);
-		setWinner(result.data.winner);
+			const result = await axios.get('http://localhost:8000/api/games/');
+			setBoard(result.data.board || initialBoard);
+			setCurrentTurn(result.data.currentTurn || 'X');
+			setWinner(result.data.winner || null);
 		} catch (error) {
-		console.error('Error fetching data:', error);
+			console.error('Error fetching data:', error);
 		}
 	};
 
@@ -28,7 +29,7 @@ const Game: React.FC = () => {
 		if (board[row][col] || winner) return;
 
 		const newBoard = board.map((r, i) =>
-		r.map((cell: string | null, j: number) => (i === row && j === col ? currentTurn : cell))
+			r.map((cell, j) => (i === row && j === col ? currentTurn : cell))
 		);
 
 		setBoard(newBoard);
