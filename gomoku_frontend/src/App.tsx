@@ -1,12 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './components/Home';
+import Game from './components/Game';
 
 const App: React.FC = () => {
 	return (
-		<div className="app">
-		<h1>Gomoku</h1>
-		<Link to="/game">Start Game</Link>
-		</div>
+		<Router>
+		<Routes>
+			<Route path="/" element={<Home />} />
+			<Route path="/game" element={<Game />} />
+		</Routes>
+		</Router>
 	);
 };
 
