@@ -7,17 +7,21 @@ const Game: React.FC = () => {
 	const [currentTurn, setCurrentTurn] = useState('X');
 	const [winner, setWinner] = useState<string | null>(null);
 
+	const fetchData = async () => {
+		try {
+		const result = await axios.get('http://localhost:8000/api/games/');
+		setBoard(result.data.board);
+		setCurrentTurn(result.data.currentTurn);
+		setWinner(result.data.winner);
+		} catch (error) {
+		console.error('Error fetching data:', error);
+		}
+	};
+
 	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const result = await axios.get('http://localhost:8000/api/games');
-				setBoard(result.data.board);
-				setCurrentTurn(result.data.currentTurn);
-			} catch (error) {
-				console.error('Error fetching data:', error);
-			}
-		};
 		fetchData();
+		const intervalId = setInterval(fetchData, 2000);
+		return () => clearInterval(intervalId);
 	}, []);
 
 	const handleClick = (row: number, col: number) => {
@@ -29,10 +33,7 @@ const Game: React.FC = () => {
 
 		setBoard(newBoard);
 		setCurrentTurn(currentTurn === 'X' ? 'O' : 'X');
-		// Call the API to update the game state
-		axios.post('/api/games', { board: newBoard, currentTurn });
-
-		// Check for a winner and update the state
+		axios.post('http://localhost:8000/api/games/', { board: newBoard, currentTurn });
 		const newWinner = calculateWinner(newBoard);
 		if (newWinner) setWinner(newWinner);
 	};
@@ -45,16 +46,16 @@ const Game: React.FC = () => {
 		];
 
 		for (let i = 0; i < lines.length; i++) {
-		const [a, b, c, d, e] = lines[i];
-		if (
-			board[a[0]][a[1]] &&
-			board[a[0]][a[1]] === board[b[0]][b[1]] &&
-			board[a[0]][a[1]] === board[c[0]][c[1]] &&
-			board[a[0]][a[1]] === board[d[0]][d[1]] &&
-			board[a[0]][a[1]] === board[e[0]][e[1]]
-		) {
-			return board[a[0]][a[1]];
-		}
+			const [a, b, c, d, e] = lines[i];
+			if (
+				board[a[0]][a[1]] &&
+				board[a[0]][a[1]] === board[b[0]][b[1]] &&
+				board[a[0]][a[1]] === board[c[0]][c[1]] &&
+				board[a[0]][a[1]] === board[d[0]][d[1]] &&
+				board[a[0]][a[1]] === board[e[0]][e[1]]
+			) {
+				return board[a[0]][a[1]];
+			}
 		}
 		return null;
 	};
