@@ -8,12 +8,13 @@ import Game from './components/Game';
 const App: React.FC = () => {
 	return (
 		<Router>
-		<Routes>
-			<Route path="/" element={<Home />} />
-			<Route path="/online" element={<OnlinePlay />} />
-			<Route path="/custom" element={<CustomPlay />} />
-			<Route path="/game" element={<Game />} />
-		</Routes>
+			<Routes>
+				<Route path="/" element={<Home />} />
+				<Route path="/online" element={<OnlinePlay />} />
+				<Route path="/custom" element={<CustomPlay />} />
+				<Route path="/online/game" element={<Game />} />
+				<Route path="/custom/game" element={<Game />} />
+			</Routes>
 		</Router>
 	);
 };

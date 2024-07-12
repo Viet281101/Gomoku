@@ -4,11 +4,12 @@ import Board from './Board';
 
 const Game: React.FC = () => {
 	const location = useLocation();
-
-	const { boardSize } = location.state as { boardSize: number };
+	const { boardSize, player1, player2 } = location.state as { boardSize: number; player1: string; player2: string };
 
 	return (
-		<div><Board boardSize={boardSize} /></div>
+		<div>
+			<Board boardSize={boardSize} player1={player1} player2={player2} />
+		</div>
 	);
 };
 
