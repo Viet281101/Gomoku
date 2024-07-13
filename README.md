@@ -1,6 +1,6 @@
 # Gomoku
 
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Viet281101/Gomoku)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Viet281101/Gomoku) ![Github language count](https://img.shields.io/github/languages/count/Viet281101/Gomoku) ![GitHub Created At](https://img.shields.io/github/created-at/Viet281101/Gomoku)
 
 Gomoku (Five in a Row) is a classic strategy board game played by two players.
 The game is typically played on a 15x15 grid, where players take turns placing black or white stones on the intersections.

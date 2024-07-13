@@ -1,17 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
 
 interface BoardProps {
 	boardSize: number;
 	player1: string;
 	player2: string;
+	gameId: number;
 }
 
-const Board: React.FC<BoardProps> = ({ boardSize, player1, player2 }) => {
+const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [board, setBoard] = useState<string[][]>(Array(boardSize).fill(null).map(() => Array(boardSize).fill('')));
 	const [currentTurn, setCurrentTurn] = useState<'black' | 'white'>('black');
 	const [winner, setWinner] = useState<string | null>(null);
 	const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
+
+	useEffect(() => {
+		axios.get(`/api/games/${gameId}/`).then(response => {
+			const gameData = response.data;
+			setBoard(gameData.board);
+			setCurrentTurn(gameData.current_turn === 'X' ? 'black' : 'white');
+			setWinner(gameData.winner ? (gameData.winner === 'X' ? 'black' : 'white') : null);
+		});
+	}, [gameId]);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -99,6 +110,11 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2 }) => {
 			} else {
 				setCurrentTurn(currentTurn === 'black' ? 'white' : 'black');
 			}
+
+			axios.post(`/api/games/${gameId}/move/`, {
+				move: { x: col, y: row },
+				player: currentTurn === 'black' ? 'X' : 'O'
+			});
 		}
 	};
 

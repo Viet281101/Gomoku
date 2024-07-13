@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const CustomPlay: React.FC = () => {
 	const [boardSize, setBoardSize] = useState(15);
@@ -7,8 +8,15 @@ const CustomPlay: React.FC = () => {
 	const [player2, setPlayer2] = useState('Human');
 	const navigate = useNavigate();
 
-	const handlePlay = () => {
-		navigate('/custom/game', { state: { boardSize, player1, player2 } });
+	const handlePlay = async () => {
+		const response = await axios.post('/api/games/', {
+			player_X: 'X',
+			player_O: 'O',
+			board: Array(boardSize).fill(null).map(() => Array(boardSize).fill(''))
+		});
+
+		const gameId = response.data.id;
+		navigate('/custom/game', { state: { boardSize, player1, player2, gameId } });
 	};
 
 	return (
