@@ -40,6 +40,19 @@ python manage.py makemigrations game
 python manage.py migrate
 ```
 
+- Create Django admin user & add more users:
+```bash
+python manage.py createsuperuser
+```
+then
+```bash
+python manage.py create_default_users
+```
+or
+```bash
+python manage.py shell < shell.py
+```
+
 - Run server django:
 ```bash
 python manage.py runserver
