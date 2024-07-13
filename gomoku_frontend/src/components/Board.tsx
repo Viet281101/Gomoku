@@ -6,9 +6,10 @@ interface BoardProps {
 	player1: string;
 	player2: string;
 	gameId: number;
+	gameData: any;
 }
 
-const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId }) => {
+const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, gameData }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [board, setBoard] = useState<string[][]>(Array(boardSize).fill(null).map(() => Array(boardSize).fill('')));
 	const [currentTurn, setCurrentTurn] = useState<'black' | 'white'>('black');
@@ -16,13 +17,12 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId }) =>
 	const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
 
 	useEffect(() => {
-		axios.get(`/api/games/${gameId}/`).then(response => {
-			const gameData = response.data;
+		if (gameData) {
 			setBoard(gameData.board);
 			setCurrentTurn(gameData.current_turn === 'X' ? 'black' : 'white');
 			setWinner(gameData.winner ? (gameData.winner === 'X' ? 'black' : 'white') : null);
-		});
-	}, [gameId]);
+		}
+	}, [gameData]);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;

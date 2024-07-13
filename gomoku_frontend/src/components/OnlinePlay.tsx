@@ -4,20 +4,26 @@ import axios from 'axios';
 
 const OnlinePlay: React.FC = () => {
 	const [selectedColor, setSelectedColor] = useState('black');
+	const [searching, setSearching] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 	const navigate = useNavigate();
 
+	const currentUserId = 3;
+
 	const handlePlay = async () => {
+		setSearching(true);
+		setError(null);
 		try {
-			const response = await axios.post('/api/games/', {
-				player_X: 1,
-				player_O: 2,
-				board_size: 15
+			const response = await axios.post('/api/games/find_or_create/', {
+				player: currentUserId
 			});
 
 			const gameId = response.data.id;
 			navigate('/online/game', { state: { boardSize: 15, player1: selectedColor, player2: 'Other Player', gameId } });
-		} catch (error) {
+		} catch (error: any) {
 			console.error(error);
+			setError(error.response?.data?.error || 'An unexpected error occurred');
+			setSearching(false);
 		}
 	};
 
@@ -33,7 +39,8 @@ const OnlinePlay: React.FC = () => {
 					</select>
 				</label>
 			</div>
-			<button onClick={handlePlay}>PLAY</button>
+			{searching ? <p>Searching for opponents ...</p> : <button onClick={handlePlay}>PLAY</button>}
+			{error && <p style={{ color: 'red' }}>{error}</p>}
 		</div>
 	);
 };

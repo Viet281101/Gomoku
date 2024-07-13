@@ -1,3 +1,4 @@
+import logging
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -5,23 +6,39 @@ from .models import Game
 from .serializers import GameSerializer
 from django.contrib.auth.models import User
 
+logger = logging.getLogger(__name__)
+
 class GameViewSet(viewsets.ModelViewSet):
 	queryset = Game.objects.all()
 	serializer_class = GameSerializer
 
-	def create(self, request, *args, **kwargs):
-		data = request.data
-		player_X = User.objects.get(id=data.get('player_X'))
-		player_O = User.objects.get(id=data.get('player_O'))
-		board_size = data.get('board_size', 15)
-		board = [['' for _ in range(board_size)] for _ in range(board_size)]
+	@action(detail=False, methods=['post'])
+	def find_or_create(self, request):
+		try:
+			player_id = request.data.get('player')
+			logger.debug(f"Received request to find or create game for player ID: {player_id}")
+			player = User.objects.get(id=player_id)
+			game = Game.objects.filter(player_O__isnull=True).first()
 
-		game = Game.objects.create(
-			player_X=player_X,
-			player_O=player_O,
-			board=board,
-		)
-		return Response(GameSerializer(game).data, status=status.HTTP_201_CREATED)
+			if game:
+				game.player_O = player
+				game.save()
+				logger.debug(f"Joined existing game: {game.id}")
+			else:
+				game = Game.objects.create(
+					player_X=player,
+					current_turn='X',
+					board=[['' for _ in range(15)] for _ in range(15)]
+				)
+				logger.debug(f"Created new game: {game.id}")
+
+			return Response(GameSerializer(game).data, status=status.HTTP_200_OK)
+		except User.DoesNotExist:
+			logger.error(f"User with ID {player_id} does not exist")
+			return Response({"error": "User does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+		except Exception as e:
+			logger.error(f"An error occurred: {e}")
+			return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 	@action(detail=True, methods=['post'])
 	def move(self, request, pk=None):
