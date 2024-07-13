@@ -1,30 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
 
-interface BoardProps {
+interface CustomBoardProps {
 	boardSize: number;
 	player1: string;
 	player2: string;
-	gameId: number;
-	gameData: any;
 }
 
-const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, gameData }) => {
+const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [board, setBoard] = useState<string[][]>(Array(boardSize).fill(null).map(() => Array(boardSize).fill('')));
 	const [currentTurn, setCurrentTurn] = useState<'black' | 'white'>('black');
 	const [winner, setWinner] = useState<string | null>(null);
 	const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
 	const [moveHistory, setMoveHistory] = useState<{ x: number, y: number, player: string }[]>([]);
-
-	useEffect(() => {
-		if (gameData) {
-			setBoard(gameData.board);
-			setCurrentTurn(gameData.current_turn === 'X' ? 'black' : 'white');
-			setWinner(gameData.winner ? (gameData.winner === 'X' ? 'black' : 'white') : null);
-			setMoveHistory(gameData.move_history);
-		}
-	}, [gameData]);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -97,7 +85,7 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, game
 		}
 	}, [board, boardSize, hoveredCell, currentTurn, winner, moveHistory]);
 
-	const handleCanvasClick = async (event: React.MouseEvent<HTMLCanvasElement>) => {
+	const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
 		if (winner) return;
 
 		const canvas = canvasRef.current;
@@ -115,26 +103,13 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, game
 			const newBoard = board.map((r, rowIndex) =>
 				r.map((cell, colIndex) => (rowIndex === row && colIndex === col ? (currentTurn === 'black' ? 'X' : 'O') : cell))
 			);
+			setBoard(newBoard);
 			const newMoveHistory = [...moveHistory, { x: col, y: row, player: currentTurn }];
-
-			try {
-				const response = await axios.post(`/api/games/${gameId}/move/`, {
-					move: { x: col, y: row, player: currentTurn === 'black' ? 'X' : 'O' }
-				});
-				
-				if (response.status === 200) {
-					setBoard(newBoard);
-					setMoveHistory(newMoveHistory);
-					if (checkWinner(newBoard, currentTurn, row, col)) {
-						setWinner(currentTurn);
-					} else {
-						setCurrentTurn(currentTurn === 'black' ? 'white' : 'black');
-					}
-				} else {
-					console.error('Move not accepted by server:', response.data);
-				}
-			} catch (error) {
-				console.error('Error making move:', error);
+			setMoveHistory(newMoveHistory);
+			if (checkWinner(newBoard, currentTurn, row, col)) {
+				setWinner(currentTurn);
+			} else {
+				setCurrentTurn(currentTurn === 'black' ? 'white' : 'black');
 			}
 		}
 	};
@@ -203,4 +178,4 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, game
 	);
 };
 
-export default Board;
+export default CustomBoard;
