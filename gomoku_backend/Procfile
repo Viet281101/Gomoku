@@ -1,0 +1,1 @@
+web: gunicorn gomoku_backend.wsgi
