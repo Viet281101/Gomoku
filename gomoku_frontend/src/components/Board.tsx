@@ -11,6 +11,7 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2 }) => {
 	const [board, setBoard] = useState<string[][]>(Array(boardSize).fill(null).map(() => Array(boardSize).fill('')));
 	const [currentTurn, setCurrentTurn] = useState<'black' | 'white'>('black');
 	const [winner, setWinner] = useState<string | null>(null);
+	const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -51,11 +52,28 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2 }) => {
 					});
 				};
 
+				const drawHoverPiece = () => {
+					if (hoveredCell && !winner && board[hoveredCell.y][hoveredCell.x] === '') {
+						ctx.beginPath();
+						ctx.arc(
+							(hoveredCell.x + 1) * cellSize,
+							(hoveredCell.y + 1) * cellSize,
+							cellSize / 3,
+							0,
+							2 * Math.PI
+						);
+						ctx.fillStyle = currentTurn === 'black' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)';
+						ctx.fill();
+						ctx.stroke();
+					}
+				};
+
 				drawBoard();
 				drawPieces();
+				drawHoverPiece();
 			}
 		}
-	}, [board, boardSize]);
+	}, [board, boardSize, hoveredCell, currentTurn, winner]);
 
 	const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
 		if (winner) return;
@@ -82,6 +100,29 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2 }) => {
 				setCurrentTurn(currentTurn === 'black' ? 'white' : 'black');
 			}
 		}
+	};
+
+	const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+
+		const rect = canvas.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+
+		const cellSize = canvas.width / (boardSize + 1);
+		const col = Math.floor(x / cellSize) - 1;
+		const row = Math.floor(y / cellSize) - 1;
+
+		if (col >= 0 && col < boardSize && row >= 0 && row < boardSize) {
+			setHoveredCell({ x: col, y: row });
+		} else {
+			setHoveredCell(null);
+		}
+	};
+
+	const handleMouseOut = () => {
+		setHoveredCell(null);
 	};
 
 	const checkWinner = (board: string[][], player: string, row: number, col: number): boolean => {
@@ -112,7 +153,14 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2 }) => {
 
 	return (
 		<div>
-			<canvas ref={canvasRef} width={600} height={600} onClick={handleCanvasClick}></canvas>
+			<canvas
+				ref={canvasRef}
+				width={600}
+				height={600}
+				onClick={handleCanvasClick}
+				onMouseMove={handleMouseMove}
+				onMouseOut={handleMouseOut}
+			></canvas>
 			{winner && <p>{winner} wins!</p>}
 		</div>
 	);
