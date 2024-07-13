@@ -190,6 +190,7 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, game
 
 	return (
 		<div>
+			<h2>{currentTurn === 'black' ? "Black's Turn" : "White's Turn"}</h2>
 			<canvas
 				ref={canvasRef}
 				width={600}

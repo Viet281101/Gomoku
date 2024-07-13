@@ -83,3 +83,10 @@ class GameViewSet(viewsets.ModelViewSet):
 						if count_consecutive(x, y, dx, dy) >= 5:
 							return True
 		return False
+
+	@action(detail=True, methods=['get'])
+	def check_status(self, request, pk=None):
+		game = self.get_object()
+		if game.player_O:
+			return Response({"status": "ready"}, status=status.HTTP_200_OK)
+		return Response({"status": "waiting"}, status=status.HTTP_200_OK)
