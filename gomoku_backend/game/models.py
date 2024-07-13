@@ -9,6 +9,7 @@ class Game(models.Model):
 	updated_at = models.DateTimeField(auto_now=True)
 	player_X = models.ForeignKey(User, related_name='player_X', on_delete=models.CASCADE)
 	player_O = models.ForeignKey(User, related_name='player_O', on_delete=models.CASCADE, null=True, blank=True)
+	move_history = models.JSONField(default=list)
 
 	def __str__(self):
 		return f"Game {self.id} - Current Turn: {self.current_turn}"

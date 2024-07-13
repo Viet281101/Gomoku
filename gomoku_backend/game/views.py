@@ -44,17 +44,23 @@ class GameViewSet(viewsets.ModelViewSet):
 	def move(self, request, pk=None):
 		game = self.get_object()
 		move = request.data.get('move')
-		x, y = move['x'], move['y']
+		logger.debug(f"Move data received: {move}")
+		x, y = move.get('x'), move.get('y')
+		player = move.get('player')
+
+		if x is None or y is None or player is None:
+			return Response({"error": "Invalid move data"}, status=400)
 
 		if game.board[y][x] != '':
 			return Response({"error": "Invalid move"}, status=400)
 
-		game.board[y][x] = game.current_turn
+		game.board[y][x] = player
+		game.move_history.append({'x': x, 'y': y, 'player': player})
+		
+		if self.check_winner(game.board, player):
+			game.winner = player
 
-		if self.check_winner(game.board, game.current_turn):
-			game.winner = game.current_turn
-
-		game.current_turn = 'O' if game.current_turn == 'X' else 'X'
+		game.current_turn = 'O' if player == 'X' else 'X'
 		game.save()
 		return Response(GameSerializer(game).data)
 

@@ -15,12 +15,14 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, game
 	const [currentTurn, setCurrentTurn] = useState<'black' | 'white'>('black');
 	const [winner, setWinner] = useState<string | null>(null);
 	const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
+	const [moveHistory, setMoveHistory] = useState<{ x: number, y: number, player: string }[]>([]);
 
 	useEffect(() => {
 		if (gameData) {
 			setBoard(gameData.board);
 			setCurrentTurn(gameData.current_turn === 'X' ? 'black' : 'white');
 			setWinner(gameData.winner ? (gameData.winner === 'X' ? 'black' : 'white') : null);
+			setMoveHistory(gameData.move_history);
 		}
 	}, [gameData]);
 
@@ -55,9 +57,18 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, game
 							if (cell !== '') {
 								ctx.beginPath();
 								ctx.arc((x + 1) * cellSize, (y + 1) * cellSize, cellSize / 3, 0, 2 * Math.PI);
-								ctx.fillStyle = cell;
+								ctx.fillStyle = cell === 'X' ? 'black' : 'white';
 								ctx.fill();
 								ctx.stroke();
+
+								const moveIndex = moveHistory.findIndex(move => move.x === x && move.y === y);
+								if (moveIndex !== -1) {
+									ctx.fillStyle = cell === 'X' ? 'white' : 'black';
+									ctx.font = `${cellSize / 3}px Arial`;
+									ctx.textAlign = 'center';
+									ctx.textBaseline = 'middle';
+									ctx.fillText((moveIndex + 1).toString(), (x + 1) * cellSize, (y + 1) * cellSize);
+								}
 							}
 						});
 					});
@@ -84,9 +95,9 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, game
 				drawHoverPiece();
 			}
 		}
-	}, [board, boardSize, hoveredCell, currentTurn, winner]);
+	}, [board, boardSize, hoveredCell, currentTurn, winner, moveHistory]);
 
-	const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+	const handleCanvasClick = async (event: React.MouseEvent<HTMLCanvasElement>) => {
 		if (winner) return;
 
 		const canvas = canvasRef.current;
@@ -102,19 +113,29 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, game
 
 		if (col >= 0 && col < boardSize && row >= 0 && row < boardSize && board[row][col] === '') {
 			const newBoard = board.map((r, rowIndex) =>
-				r.map((cell, colIndex) => (rowIndex === row && colIndex === col ? currentTurn : cell))
+				r.map((cell, colIndex) => (rowIndex === row && colIndex === col ? (currentTurn === 'black' ? 'X' : 'O') : cell))
 			);
-			setBoard(newBoard);
-			if (checkWinner(newBoard, currentTurn, row, col)) {
-				setWinner(currentTurn);
-			} else {
-				setCurrentTurn(currentTurn === 'black' ? 'white' : 'black');
-			}
+			const newMoveHistory = [...moveHistory, { x: col, y: row, player: currentTurn }];
 
-			axios.post(`/api/games/${gameId}/move/`, {
-				move: { x: col, y: row },
-				player: currentTurn === 'black' ? 'X' : 'O'
-			});
+			try {
+				const response = await axios.post(`/api/games/${gameId}/move/`, {
+					move: { x: col, y: row, player: currentTurn === 'black' ? 'X' : 'O' }
+				});
+				
+				if (response.status === 200) {
+					setBoard(newBoard);
+					setMoveHistory(newMoveHistory);
+					if (checkWinner(newBoard, currentTurn, row, col)) {
+						setWinner(currentTurn);
+					} else {
+						setCurrentTurn(currentTurn === 'black' ? 'white' : 'black');
+					}
+				} else {
+					console.error('Move not accepted by server:', response.data);
+				}
+			} catch (error) {
+				console.error('Error making move:', error);
+			}
 		}
 	};
 
