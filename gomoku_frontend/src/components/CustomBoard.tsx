@@ -106,7 +106,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 			setBoard(newBoard);
 			const newMoveHistory = [...moveHistory, { x: col, y: row, player: currentTurn }];
 			setMoveHistory(newMoveHistory);
-			if (checkWinner(newBoard, currentTurn, row, col)) {
+			if (checkWinner(newBoard, currentTurn === 'black' ? 'X' : 'O', row, col)) {
 				setWinner(currentTurn);
 			} else {
 				setCurrentTurn(currentTurn === 'black' ? 'white' : 'black');
