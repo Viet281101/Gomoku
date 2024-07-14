@@ -3,13 +3,12 @@ import axios from 'axios';
 
 interface BoardProps {
 	boardSize: number;
-	player1: string;
-	player2: string;
+	playerColor: string;
 	gameId: number;
 	gameData: any;
 }
 
-const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, gameData }) => {
+const Board: React.FC<BoardProps> = ({ boardSize, playerColor, gameId, gameData }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [board, setBoard] = useState<string[][]>(Array(boardSize).fill(null).map(() => Array(boardSize).fill('')));
 	const [currentTurn, setCurrentTurn] = useState<'black' | 'white'>('black');
@@ -75,7 +74,7 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, game
 				};
 
 				const drawHoverPiece = () => {
-					if (hoveredCell && !winner && board[hoveredCell.y][hoveredCell.x] === '') {
+					if (hoveredCell && !winner) {
 						ctx.beginPath();
 						ctx.arc(
 							(hoveredCell.x + 1) * cellSize,
@@ -84,7 +83,18 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, game
 							0,
 							2 * Math.PI
 						);
-						ctx.fillStyle = currentTurn === 'black' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)';
+						if (board[hoveredCell.y][hoveredCell.x] === '' && currentTurn === playerColor) {
+							ctx.fillStyle = currentTurn === 'black' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)';
+						} else {
+							ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+							ctx.strokeStyle = 'red';
+							ctx.lineWidth = 2;
+							ctx.moveTo((hoveredCell.x) * cellSize, (hoveredCell.y) * cellSize);
+							ctx.lineTo((hoveredCell.x) * cellSize, (hoveredCell.y) * cellSize);
+							ctx.moveTo((hoveredCell.x) * cellSize, (hoveredCell.y) * cellSize);
+							ctx.lineTo((hoveredCell.x) * cellSize, (hoveredCell.y) * cellSize);
+							ctx.stroke();
+						}
 						ctx.fill();
 						ctx.stroke();
 					}
@@ -98,7 +108,7 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, game
 	}, [board, boardSize, hoveredCell, currentTurn, winner, moveHistory]);
 
 	const handleCanvasClick = async (event: React.MouseEvent<HTMLCanvasElement>) => {
-		if (winner) return;
+		if (winner || currentTurn !== playerColor) return;
 
 		const canvas = canvasRef.current;
 		if (!canvas) return;
@@ -191,6 +201,7 @@ const Board: React.FC<BoardProps> = ({ boardSize, player1, player2, gameId, game
 	return (
 		<div>
 			<h2>{currentTurn === 'black' ? "Black's Turn" : "White's Turn"}</h2>
+			<h3>{`You're ${playerColor}`}</h3>
 			<canvas
 				ref={canvasRef}
 				width={600}

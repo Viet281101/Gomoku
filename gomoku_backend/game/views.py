@@ -23,6 +23,7 @@ class GameViewSet(viewsets.ModelViewSet):
 			if game:
 				game.player_O = player
 				game.save()
+				player_color = 'white'
 				logger.debug(f"Joined existing game: {game.id}")
 			else:
 				game = Game.objects.create(
@@ -30,9 +31,10 @@ class GameViewSet(viewsets.ModelViewSet):
 					current_turn='X',
 					board=[['' for _ in range(15)] for _ in range(15)]
 				)
+				player_color = 'black'
 				logger.debug(f"Created new game: {game.id}")
 
-			return Response(GameSerializer(game).data, status=status.HTTP_200_OK)
+			return Response({"game": GameSerializer(game).data, "player_color": player_color}, status=status.HTTP_200_OK)
 		except User.DoesNotExist:
 			logger.error(f"User with ID {player_id} does not exist")
 			return Response({"error": "User does not exist"}, status=status.HTTP_400_BAD_REQUEST)
