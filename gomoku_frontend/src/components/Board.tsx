@@ -88,12 +88,6 @@ const Board: React.FC<BoardProps> = ({ boardSize, playerColor, gameId, gameData 
 						} else {
 							ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
 							ctx.strokeStyle = 'red';
-							ctx.lineWidth = 2;
-							ctx.moveTo((hoveredCell.x) * cellSize, (hoveredCell.y) * cellSize);
-							ctx.lineTo((hoveredCell.x) * cellSize, (hoveredCell.y) * cellSize);
-							ctx.moveTo((hoveredCell.x) * cellSize, (hoveredCell.y) * cellSize);
-							ctx.lineTo((hoveredCell.x) * cellSize, (hoveredCell.y) * cellSize);
-							ctx.stroke();
 						}
 						ctx.fill();
 						ctx.stroke();

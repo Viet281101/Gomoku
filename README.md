@@ -30,7 +30,7 @@ python3 -m venv env
 source env/bin/activate
 ```
 
-- Install [Django](https://www.djangoproject.com/download/) libraries:
+- Install [Django](https://www.djangoproject.com/download/) & libraries by using `requirements.txt` file:
 ```bash
 pip install requirements.txt
 cd gomoku_backend/

@@ -165,6 +165,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 
 	return (
 		<div>
+			<h2>{currentTurn === 'black' ? "Black's Turn" : "White's Turn"}</h2>
 			<canvas
 				ref={canvasRef}
 				width={600}
