@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const Game: React.FC = () => {
 	const location = useLocation();
-	const { boardSize, player1, player2, gameId } = location.state as { boardSize: number; player1: string; player2: string; gameId: number };
+	const { boardSize, playerColor, gameId } = location.state as { boardSize: number; playerColor: 'black' | 'white'; gameId: number };
 	const [gameData, setGameData] = useState(null);
 
 	useEffect(() => {
@@ -22,7 +22,7 @@ const Game: React.FC = () => {
 
 	return (
 		<div>
-			<Board boardSize={boardSize} player1={player1} player2={player2} gameId={gameId} gameData={gameData} />
+			<Board boardSize={boardSize} playerColor={playerColor} gameId={gameId} gameData={gameData} />
 		</div>
 	);
 };

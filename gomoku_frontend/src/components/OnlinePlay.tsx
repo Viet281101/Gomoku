@@ -18,11 +18,27 @@ const OnlinePlay: React.FC = () => {
 				player: currentUserId
 			});
 
-			const gameId = response.data.id;
-			navigate('/online/game', { state: { boardSize: 15, player1: selectedColor, player2: 'Other Player', gameId } });
+			const gameId = response.data.game.id;
+			const playerColor = response.data.player_color;
+			checkGameStatus(gameId, playerColor);
 		} catch (error: any) {
 			console.error(error);
 			setError(error.response?.data?.error || 'An unexpected error occurred');
+			setSearching(false);
+		}
+	};
+
+	const checkGameStatus = async (gameId: number, playerColor: string) => {
+		try {
+			const response = await axios.get(`/api/games/${gameId}/check_status/`);
+			if (response.data.status === 'ready') {
+				navigate('/online/game', { state: { boardSize: 15, playerColor, gameId } });
+			} else {
+				setTimeout(() => checkGameStatus(gameId, playerColor), 2000);
+			}
+		} catch (error: any) {
+			console.error(error);
+			setError('An unexpected error occurred');
 			setSearching(false);
 		}
 	};

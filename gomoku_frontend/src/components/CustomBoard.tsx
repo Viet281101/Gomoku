@@ -106,7 +106,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 			setBoard(newBoard);
 			const newMoveHistory = [...moveHistory, { x: col, y: row, player: currentTurn }];
 			setMoveHistory(newMoveHistory);
-			if (checkWinner(newBoard, currentTurn, row, col)) {
+			if (checkWinner(newBoard, currentTurn === 'black' ? 'X' : 'O', row, col)) {
 				setWinner(currentTurn);
 			} else {
 				setCurrentTurn(currentTurn === 'black' ? 'white' : 'black');
@@ -165,6 +165,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 
 	return (
 		<div>
+			<h2>{currentTurn === 'black' ? "Black's Turn" : "White's Turn"}</h2>
 			<canvas
 				ref={canvasRef}
 				width={600}
