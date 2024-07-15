@@ -195,7 +195,7 @@ const Board: React.FC<BoardProps> = ({ boardSize, playerColor, gameId, gameData 
 	return (
 		<div>
 			<h2>{`You're ${playerColor.charAt(0).toUpperCase() + playerColor.slice(1)}`}</h2>
-			<h2>{currentTurn === 'black' ? "Black's Turn" : "White's Turn"}</h2>
+			<h2>{currentTurn === 'black' ? "Black" : "White"}'s Turn</h2>
 			<canvas
 				ref={canvasRef}
 				width={600}
