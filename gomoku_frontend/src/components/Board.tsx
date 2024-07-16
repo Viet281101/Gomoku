@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface BoardProps {
 	boardSize: number;
@@ -16,6 +17,7 @@ const Board: React.FC<BoardProps> = ({ boardSize, playerColor, gameId, gameData 
 	const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
 	const [moveHistory, setMoveHistory] = useState<{ x: number, y: number, player: string }[]>([]);
 	const [canvasSize, setCanvasSize] = useState(600);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const updateCanvasSize = () => {
@@ -206,6 +208,10 @@ const Board: React.FC<BoardProps> = ({ boardSize, playerColor, gameId, gameData 
 		return false;
 	};
 
+	const handleQuit = () => {
+		navigate('/');
+	};
+
 	return (
 		<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column' }}>
 			<h2>{`You're ${playerColor.charAt(0).toUpperCase() + playerColor.slice(1)}`}</h2>
@@ -218,7 +224,12 @@ const Board: React.FC<BoardProps> = ({ boardSize, playerColor, gameId, gameData 
 				onMouseMove={handleMouseMove}
 				onMouseOut={handleMouseOut}
 			></canvas>
-			{winner && <p>{winner} wins!</p>}
+			{winner && (
+				<div>
+					<p>{winner} wins!</p>
+					<button onClick={handleQuit}>Quit</button>
+				</div>
+			)}
 		</div>
 	);
 };

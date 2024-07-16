@@ -7,6 +7,7 @@ const CustomPlay: React.FC = () => {
 	const [player2, setPlayer2] = useState('Human');
 	const navigate = useNavigate();
 
+	const handleBack = () => { navigate('/'); };
 	const handlePlay = () => {
 		navigate('/custom/game', { state: { boardSize, player1, player2 } });
 	};
@@ -45,7 +46,10 @@ const CustomPlay: React.FC = () => {
 					</select>
 				</label>
 			</div>
-			<button onClick={handlePlay}>PLAY</button>
+			<div>
+				<button onClick={handlePlay}>PLAY</button>
+				<button onClick={handleBack}>Back</button>
+			</div>
 		</div>
 	);
 };

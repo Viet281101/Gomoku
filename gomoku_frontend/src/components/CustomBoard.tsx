@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface CustomBoardProps {
 	boardSize: number;
@@ -14,6 +15,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 	const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
 	const [moveHistory, setMoveHistory] = useState<{ x: number, y: number, player: string }[]>([]);
 	const [canvasSize, setCanvasSize] = useState(600);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const updateCanvasSize = () => {
@@ -177,6 +179,10 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 		return false;
 	};
 
+	const handleQuit = () => {
+		navigate('/');
+	};
+
 	return (
 		<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column' }}>
 			<h2>{currentTurn === 'black' ? "Black" : "White"}'s Turn</h2>
@@ -188,7 +194,12 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 				onMouseMove={handleMouseMove}
 				onMouseOut={handleMouseOut}
 			></canvas>
-			{winner && <p>{winner} wins!</p>}
+			{winner && (
+				<div>
+					<p>{winner} wins!</p>
+					<button onClick={handleQuit}>Quit</button>
+				</div>
+			)}
 		</div>
 	);
 };
