@@ -5,10 +5,12 @@ export class Toolbar {
 	private canvas!: HTMLCanvasElement;
 	private ctx!: CanvasRenderingContext2D;
 	private isMobile: boolean;
-	private buttons: { name: string, icon: string, action: () => void, x: number, y: number, width: number, height: number }[];
+	private buttons: { name: string, icon: string, action: () => void, x: number, y: number, width: number, height: number, description: string }[];
 	private popupOpen: boolean;
 	private currentPopup: HTMLElement | null;
 	private currentCloseIcon: HTMLImageElement | null;
+	private homeButtonRect!: { x: number, y: number, width: number, height: number };
+	private tooltip: HTMLDivElement;
 
 	constructor() {
 		this.isMobile = this.checkIfMobile();
@@ -17,8 +19,11 @@ export class Toolbar {
 		this.popupOpen = false;
 		this.currentPopup = null;
 		this.currentCloseIcon = null;
+		this.tooltip = this.createTooltip();
 		this.drawToolbar();
 		this.addEventListeners();
+		this.addHomeButton();
+		this.homeButtonRect = this.isMobile ? { x: 10, y: 10, width: 40, height: 40 } : { x: 10, y: 10, width: 40, height: 40 };
 	}
 
 	private checkIfMobile(): boolean {
@@ -38,9 +43,22 @@ export class Toolbar {
 
 	private createButtons() {
 		return [
-			{ name: 'Tutorial', icon: '/icons/question.png', action: () => this.togglePopup('tutorial'), x: 0, y: 0, width: 0, height: 0 },
-			{ name: 'Settings', icon: '/icons/setting.png', action: () => this.togglePopup('settings'), x: 0, y: 0, width: 0, height: 0 },
+			{ name: 'Tutorial', icon: '/icons/question.png', action: () => this.togglePopup('tutorial'), x: 0, y: 0, width: 0, height: 0, description: 'See How to Play & Rules' },
+			{ name: 'Settings', icon: '/icons/setting.png', action: () => this.togglePopup('settings'), x: 0, y: 0, width: 0, height: 0, description: 'Open Settings' },
 		];
+	}
+
+	private createTooltip() {
+		const tooltip = document.createElement('div');
+		tooltip.style.position = 'absolute';
+		tooltip.style.backgroundColor = '#fff';
+		tooltip.style.border = '1px solid #000';
+		tooltip.style.padding = '5px';
+		tooltip.style.display = 'none';
+		tooltip.style.whiteSpace = 'pre';
+		tooltip.style.zIndex = '1001';
+		document.body.appendChild(tooltip);
+		return tooltip;
 	}
 
 	private drawToolbar() {
@@ -92,13 +110,22 @@ export class Toolbar {
 	private addEventListeners() {
 		this.canvas.addEventListener('mousemove', (e) => {
 			let cursor = 'default';
+			let foundButton: { name: string, description: string } | null = null;
 			this.buttons.forEach(button => {
-				if (this.isInside(e.clientX, e.clientY, button)) { 
-					cursor = 'pointer'; 
-				}
+				if (this.isInside(e.clientX, e.clientY, button)) { cursor = 'pointer'; foundButton = button; }
 			});
+			if (this.isInside(e.clientX, e.clientY, this.homeButtonRect)) {
+				cursor = 'pointer'; foundButton = { name: 'Home', description: 'Return to Home' };
+			}
 			this.canvas.style.cursor = cursor;
+			if (foundButton) {
+				this.tooltip.innerHTML = `${foundButton.name}\n\n${foundButton.description}`;
+				this.tooltip.style.left = `${e.clientX + 10}px`;
+				this.tooltip.style.top = `${e.clientY + 10}px`;
+				this.tooltip.style.display = 'block';
+			} else { this.tooltip.style.display = 'none'; }
 		});
+		this.canvas.addEventListener('mouseleave', () => { this.tooltip.style.display = 'none'; });
 		this.canvas.addEventListener('mousedown', (e) => this.handleCanvasClick(e));
 		this.canvas.addEventListener('touchstart', (e) => this.handleCanvasClick(e));
 		document.addEventListener('click', (e) => this.handleDocumentClick(e));
@@ -113,6 +140,9 @@ export class Toolbar {
 				button.action();
 			}
 		});
+		if (this.isInside(mouseX, mouseY, this.homeButtonRect)) {
+			window.location.href = '/';
+		}
 	}
 
 	private handleDocumentClick(e: MouseEvent | TouchEvent) {
@@ -131,18 +161,20 @@ export class Toolbar {
 		this.updateToolbarLayout();
 		this.canvas.width = this.isMobile ? window.innerWidth : 50;
 		this.canvas.height = this.isMobile ? 50 : window.innerHeight;
-		this.drawToolbar(); 
+		this.drawToolbar();
+		this.addHomeButton();
 		this.addEventListeners();
 	}
 
 	private updateToolbarLayout() {
-		const wasMobile = this.isMobile; 
+		const wasMobile = this.isMobile;
 		this.isMobile = this.checkIfMobile();
-		if (wasMobile !== this.isMobile) { 
-			this.removeCanvas(); 
-			this.setupCanvas(); 
-			this.drawToolbar(); 
-			this.addEventListeners(); 
+		if (wasMobile !== this.isMobile) {
+			this.removeCanvas();
+			this.setupCanvas();
+			this.drawToolbar();
+			this.addHomeButton();
+			this.addEventListeners();
 		}
 	}
 
@@ -154,6 +186,16 @@ export class Toolbar {
 
 	private isInside(x: number, y: number, rect: { x: number; y: number; width: number; height: number; }): boolean {
 		return x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height;
+	}
+
+	private addHomeButton() {
+		const img = new Image();
+		img.src = '/icons/home.png';
+		img.onload = () => {
+			this.ctx.drawImage(img, 8, 8, 36, 36);
+			this.ctx.strokeStyle = '#fff';
+			this.ctx.strokeRect(5, 5, 42, 42);
+		};
 	}
 
 	private togglePopup(type: string) {
@@ -241,8 +283,8 @@ export class Toolbar {
 		this.currentPopup = null;
 	}
 
-	private closeCurrentPopup() { 
-		if (this.currentPopup && this.currentPopup.parentNode) { 
+	private closeCurrentPopup() {
+		if (this.currentPopup && this.currentPopup.parentNode) {
 			this.currentPopup.parentNode.removeChild(this.currentPopup);
 			this.currentPopup = null;
 		}
