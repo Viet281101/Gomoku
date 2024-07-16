@@ -1,42 +1,29 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 
-export const showTutorialPopup = () => {
-	const popup = (
-		<div id="tutorialPopup" style={popupStyle}>
-		<h3 style={titleStyle}>Tutorial</h3>
-		<canvas width={370} height={4000} style={canvasStyle}></canvas>
+export function showTutorialPopup() {
+	const popupContainer = document.createElement('div');
+	popupContainer.id = 'tutorialPopup';
+	popupContainer.style.position = 'fixed';
+	popupContainer.style.top = '50%';
+	popupContainer.style.left = '50%';
+	popupContainer.style.transform = 'translate(-50%, -50%)';
+	popupContainer.style.width = '300px';
+	popupContainer.style.padding = '20px';
+	popupContainer.style.backgroundColor = 'white';
+	popupContainer.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.1)';
+	popupContainer.style.zIndex = '1000';
+	document.body.appendChild(popupContainer);
+
+	const closePopup = () => {
+		document.body.removeChild(popupContainer);
+	};
+
+	const root = ReactDOM.createRoot(popupContainer);
+	root.render(
+		<div>
+			<h2>Tutorial</h2>
+			<p>Here is the tutorial.</p>
+			<button onClick={closePopup}>Close</button>
 		</div>
 	);
-
-	ReactDOM.render(popup, document.getElementById('popup-root'));
-};
-
-const popupStyle: React.CSSProperties = {
-	position: 'absolute',
-	top: '50px',
-	left: '50%',
-	transform: 'translateX(-50%)',
-	width: '370px',
-	height: '100%',
-	border: '3px solid #000',
-	backgroundColor: '#a0a0a0',
-	overflowY: 'auto',
-	zIndex: 1000
-};
-
-const titleStyle: React.CSSProperties = {
-	position: 'absolute',
-	top: '-10px',
-	left: '50%',
-	transform: 'translateX(-50%)',
-	zIndex: 1001,
-	fontSize: '22px',
-	color: '#00ffaa',
-	backgroundColor: 'rgba(0, 0, 0, 0)'
-};
-
-const canvasStyle: React.CSSProperties = {
-	display: 'block',
-	margin: '0 auto'
-};
+}
