@@ -3,4 +3,3 @@
 * { box-sizing: border-box; font-family: 'Pixellari', sans-serif;}
 body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #dadada; }
 canvas {border: 1px solid #000; }
-#popup-root { position: relative; z-index: 1000;}

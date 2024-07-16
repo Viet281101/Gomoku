@@ -1,32 +1,65 @@
-import React, { useEffect, useRef } from 'react';
 import { showSettingsPopup } from './popup/Setting';
 import { showTutorialPopup } from './popup/Tutorial';
 
-const Toolbar: React.FC = () => {
-	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const isMobile = window.innerWidth <= 800;
+export class Toolbar {
+	private canvas!: HTMLCanvasElement;
+	private ctx!: CanvasRenderingContext2D;
+	private isMobile: boolean;
+	private buttons: { name: string, icon: string, action: () => void, x: number, y: number, width: number, height: number }[];
+	private popupOpen: boolean;
+	private currentPopup: HTMLElement | null;
+	private currentCloseIcon: HTMLImageElement | null;
 
-	const buttons = [
-		{ name: 'Tutorial', icon: '/icons/question.png', action: () => togglePopup('tutorial'), x: 0, y: 0, width: 0, height: 0 },
-		{ name: 'Settings', icon: '/icons/setting.png', action: () => togglePopup('settings'), x: 0, y: 0, width: 0, height: 0 }
-	];
+	constructor() {
+		this.isMobile = this.checkIfMobile();
+		this.setupCanvas();
+		this.buttons = this.createButtons();
+		this.popupOpen = false;
+		this.currentPopup = null;
+		this.currentCloseIcon = null;
+		this.drawToolbar();
+		this.addEventListeners();
+	}
 
-	const drawToolbar = (ctx: CanvasRenderingContext2D) => {
-		ctx.fillStyle = '#333';
-		ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-		if (isMobile) { drawToolbarVertical(ctx); }
-		else { drawToolbarHorizontal(ctx); }
-	};
+	private checkIfMobile(): boolean {
+		return window.innerWidth <= 800;
+	}
 
-	const drawToolbarVertical = (ctx: CanvasRenderingContext2D) => {
-		let startX = (ctx.canvas.width - buttons.length * 60) / 2;
-		buttons.forEach(button => {
+	private setupCanvas() {
+		this.canvas = document.createElement('canvas');
+		this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
+		this.canvas.width = this.isMobile ? window.innerWidth : 50;
+		this.canvas.height = this.isMobile ? 50 : window.innerHeight;
+		this.canvas.style.position = 'absolute';
+		this.canvas.style.left = this.canvas.style.top = '0';
+		this.canvas.style.zIndex = '999';
+		document.body.appendChild(this.canvas);
+	}
+
+	private createButtons() {
+		return [
+			{ name: 'Tutorial', icon: '/icons/question.png', action: () => this.togglePopup('tutorial'), x: 0, y: 0, width: 0, height: 0 },
+			{ name: 'Settings', icon: '/icons/setting.png', action: () => this.togglePopup('settings'), x: 0, y: 0, width: 0, height: 0 },
+		];
+	}
+
+	private drawToolbar() {
+		this.ctx.fillStyle = '#333';
+		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+		this.isMobile ? this.drawToolbarVertical() : this.drawToolbarHorizontal();
+	}
+
+	private drawToolbarVertical() {
+		const totalWidth = this.buttons.length * 60;
+		let startX = (this.canvas.width - totalWidth) / 2;
+
+		this.buttons.forEach(button => {
 			const img = new Image();
 			img.src = button.icon;
 			img.onload = () => {
-				ctx.drawImage(img, startX - 2, 8, 36, 36);
-				ctx.strokeStyle = '#fff';
-				ctx.strokeRect(startX - 5, 5, 42, 42);
+				this.ctx.drawImage(img, startX - 2, 8, 36, 36);
+				this.ctx.strokeStyle = '#fff';
+				this.ctx.strokeRect(startX - 5, 5, 42, 42);
 				button.x = startX - 5;
 				button.y = 5;
 				button.width = 42;
@@ -34,17 +67,19 @@ const Toolbar: React.FC = () => {
 				startX += 60;
 			};
 		});
-	};
+	}
 
-	const drawToolbarHorizontal = (ctx: CanvasRenderingContext2D) => {
-		let startY = (ctx.canvas.height - buttons.length * 60) / 2;
-		buttons.forEach(button => {
+	private drawToolbarHorizontal() {
+		const totalHeight = this.buttons.length * 60;
+		let startY = (this.canvas.height - totalHeight) / 2;
+
+		this.buttons.forEach(button => {
 			const img = new Image();
 			img.src = button.icon;
 			img.onload = () => {
-				ctx.drawImage(img, 8, startY - 2, 36, 36);
-				ctx.strokeStyle = '#fff';
-				ctx.strokeRect(5, startY - 5, 42, 42);
+				this.ctx.drawImage(img, 8, startY - 2, 36, 36);
+				this.ctx.strokeStyle = '#fff';
+				this.ctx.strokeRect(5, startY - 5, 42, 42);
 				button.x = 5;
 				button.y = startY - 5;
 				button.width = 42;
@@ -52,61 +87,169 @@ const Toolbar: React.FC = () => {
 				startY += 60;
 			};
 		});
-	};
+	}
 
-	const togglePopup = (type: string) => {
-		switch (type) {
-			case 'tutorial': showTutorialPopup(); break;
-			case 'settings': showSettingsPopup(); break;
-		}
-	};
+	private addEventListeners() {
+		this.canvas.addEventListener('mousemove', (e) => {
+			let cursor = 'default';
+			this.buttons.forEach(button => {
+				if (this.isInside(e.clientX, e.clientY, button)) { 
+					cursor = 'pointer'; 
+				}
+			});
+			this.canvas.style.cursor = cursor;
+		});
+		this.canvas.addEventListener('mousedown', (e) => this.handleCanvasClick(e));
+		this.canvas.addEventListener('touchstart', (e) => this.handleCanvasClick(e));
+		document.addEventListener('click', (e) => this.handleDocumentClick(e));
+		document.addEventListener('touchstart', (e) => this.handleDocumentClick(e));
+	}
 
-	useEffect(() => {
-		const canvas = canvasRef.current;
-		if (canvas) {
-			const ctx = canvas.getContext('2d');
-			if (ctx) { drawToolbar(ctx); }
-
-			const handleResize = () => {
-				canvas.width = window.innerWidth <= 800 ? window.innerWidth : 50;
-				canvas.height = window.innerWidth <= 800 ? 50 : window.innerHeight;
-				if (ctx) { drawToolbar(ctx); }
-			};
-
-			window.addEventListener('resize', handleResize);
-
-			return () => {
-				window.removeEventListener('resize', handleResize);
-			};
-		}
-	}, [canvasRef, isMobile]);
-
-	const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-		const rect = canvasRef.current?.getBoundingClientRect();
-		const mouseX = 'clientX' in e ? e.clientX - (rect?.left || 0) : e.touches[0].clientX - (rect?.left || 0);
-		const mouseY = 'clientY' in e ? e.clientY - (rect?.top || 0) : e.touches[0].clientY - (rect?.top || 0);
-
-		buttons.forEach(button => {
-			if (isInside(mouseX, mouseY, button)) {
+	private handleCanvasClick(e: MouseEvent | TouchEvent) {
+		const mouseX = 'clientX' in e ? e.clientX : e.touches[0].clientX;
+		const mouseY = 'clientY' in e ? e.clientY : e.touches[0].clientY;
+		this.buttons.forEach(button => {
+			if (this.isInside(mouseX, mouseY, button)) {
 				button.action();
 			}
 		});
-	};
+	}
 
-	const isInside = (x: number, y: number, rect: { x: number; y: number; width: number; height: number }): boolean => {
+	private handleDocumentClick(e: MouseEvent | TouchEvent) {
+		if (this.popupOpen) {
+			const popups = ['tutorialPopup', 'settingsPopup'];
+			popups.forEach(popupId => {
+				const popup = document.getElementById(popupId);
+				if (popup && !popup.contains(e.target as Node) && !this.canvas.contains(e.target as Node)) {
+					this.closeCurrentPopup();
+				}
+			});
+		}
+	}
+
+	public resizeToolbar() {
+		this.updateToolbarLayout();
+		this.canvas.width = this.isMobile ? window.innerWidth : 50;
+		this.canvas.height = this.isMobile ? 50 : window.innerHeight;
+		this.drawToolbar(); 
+		this.addEventListeners();
+	}
+
+	private updateToolbarLayout() {
+		const wasMobile = this.isMobile; 
+		this.isMobile = this.checkIfMobile();
+		if (wasMobile !== this.isMobile) { 
+			this.removeCanvas(); 
+			this.setupCanvas(); 
+			this.drawToolbar(); 
+			this.addEventListeners(); 
+		}
+	}
+
+	private removeCanvas() {
+		if (this.canvas && this.canvas.parentNode) {
+			this.canvas.parentNode.removeChild(this.canvas);
+		}
+	}
+
+	private isInside(x: number, y: number, rect: { x: number; y: number; width: number; height: number; }): boolean {
 		return x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height;
-	};
+	}
 
-	return (
-		<canvas
-			ref={canvasRef}
-			width={isMobile ? window.innerWidth : 50}
-			height={isMobile ? 50 : window.innerHeight}
-			style={{ position: 'absolute', left: 0, top: 0, zIndex: 999 }}
-			onClick={handleCanvasClick}
-			onTouchStart={handleCanvasClick}
-		/>
-	);
-};
+	private togglePopup(type: string) {
+		if (this.currentPopup && this.currentPopup.id === `${type}Popup`) {
+			this.closePopup(type);
+		} else {
+			this.closeCurrentPopup();
+			this.showPopup(type);
+		}
+	}
 
-export default Toolbar;
+	private showPopup(type: string) {
+		this.popupOpen = true;
+		switch (type) {
+			case 'tutorial': showTutorialPopup(this); break;
+			case 'settings': showSettingsPopup(this); break;
+		}
+	}
+
+	public createPopupContainer(id: string, title: string) {
+		const popupContainer = document.createElement('div');
+		popupContainer.id = id;
+		popupContainer.style.position = 'absolute';
+		popupContainer.style.top = this.isMobile ? '50px' : '0';
+		popupContainer.style.left = this.isMobile ? '50%' : '238px';
+		popupContainer.style.transform = 'translateX(-50%)';
+		popupContainer.style.width = '370px';
+		popupContainer.style.height = '100%';
+		popupContainer.style.border = '3px solid #000';
+		popupContainer.style.backgroundColor = '#a0a0a0';
+		popupContainer.style.overflowY = 'auto';
+		popupContainer.style.zIndex = '1000';
+		document.body.appendChild(popupContainer);
+
+		const popup = document.createElement('canvas');
+		popup.width = 370;
+		popup.height = 4000;
+		popupContainer.appendChild(popup);
+
+		const titleElement = document.createElement('h3');
+		titleElement.style.position = 'absolute';
+		titleElement.style.top = '-10px';
+		titleElement.style.left = '50%';
+		titleElement.style.transform = 'translateX(-50%)';
+		titleElement.style.zIndex = '1001';
+		titleElement.style.fontSize = '22px';
+		titleElement.style.color = '#00ffaa';
+		titleElement.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+		titleElement.textContent = title;
+		popupContainer.appendChild(titleElement);
+
+		this.addCloseIcon();
+		this.currentPopup = popupContainer;
+		return popupContainer;
+	}
+
+	private addCloseIcon() {
+		if (this.currentCloseIcon) { document.body.removeChild(this.currentCloseIcon); }
+		const closeIcon = new Image();
+		closeIcon.src = '/icons/close.png';
+		closeIcon.style.position = 'fixed';
+		closeIcon.style.top = this.isMobile ? '56px' : '10px';
+		closeIcon.style.left = this.isMobile ? 'calc(50% + 162px)' : '400px';
+		closeIcon.style.cursor = 'pointer';
+		closeIcon.style.zIndex = '1001';
+		closeIcon.style.transform = 'translateX(-50%)';
+		closeIcon.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+		closeIcon.addEventListener('click', () => this.closeCurrentPopup());
+		document.body.appendChild(closeIcon);
+		this.currentCloseIcon = closeIcon;
+	}
+
+	public closePopup(type: string) {
+		const popup = document.getElementById(`${type}Popup`);
+		if (popup && popup.parentNode) {
+			popup.parentNode.removeChild(popup);
+		}
+		if (this.currentCloseIcon && this.currentCloseIcon.parentNode) {
+			this.currentCloseIcon.parentNode.removeChild(this.currentCloseIcon);
+			this.currentCloseIcon = null;
+		}
+		const inputs = document.querySelectorAll('.popup-input');
+		inputs.forEach(input => input.parentElement?.removeChild(input));
+		this.popupOpen = false;
+		this.currentPopup = null;
+	}
+
+	private closeCurrentPopup() { 
+		if (this.currentPopup && this.currentPopup.parentNode) { 
+			this.currentPopup.parentNode.removeChild(this.currentPopup);
+			this.currentPopup = null;
+		}
+		if (this.currentCloseIcon && this.currentCloseIcon.parentNode) {
+			this.currentCloseIcon.parentNode.removeChild(this.currentCloseIcon);
+			this.currentCloseIcon = null;
+		}
+		this.popupOpen = false;
+	}
+}
