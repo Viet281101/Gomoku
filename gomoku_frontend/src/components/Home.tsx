@@ -9,7 +9,7 @@ const Home: React.FC = () => {
 
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-			<h1>HOME</h1>
+			<h1>GOMOKU</h1>
 			<button onClick={goToOnlinePlay} style={{ margin: '10px' }}>Online Play</button>
 			<button onClick={goToCustomPlay} style={{ margin: '10px' }}>Custom Play</button>
 			<button onClick={handleQuit} style={{ margin: '10px' }}>Quit</button>

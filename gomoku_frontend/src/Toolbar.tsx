@@ -121,7 +121,7 @@ export class Toolbar {
 				cursor = 'pointer'; foundButton = { name: 'Home', description: 'Return to Home' };
 			}
 			this.canvas.style.cursor = cursor;
-			if (foundButton) {
+			if (foundButton && !this.isMobile) {
 				this.tooltip.innerHTML = `${foundButton.name}\n\n${foundButton.description}`;
 				this.tooltip.style.left = `${e.clientX + 10}px`;
 				this.tooltip.style.top = `${e.clientY + 10}px`;
