@@ -42,9 +42,10 @@ export class Toolbar {
 	}
 
 	private createButtons() {
+		const baseIconPath = import.meta.env.BASE_URL + 'icons/';
 		return [
-			{ name: 'Tutorial', icon: '/icons/question.png', action: () => this.togglePopup('tutorial'), x: 0, y: 0, width: 0, height: 0, description: 'See How to Play & Rules' },
-			{ name: 'Settings', icon: '/icons/setting.png', action: () => this.togglePopup('settings'), x: 0, y: 0, width: 0, height: 0, description: 'Open Settings' },
+			{ name: 'Tutorial', icon: baseIconPath + 'question.png', action: () => this.togglePopup('tutorial'), x: 0, y: 0, width: 0, height: 0, description: 'See How to Play & Rules' },
+			{ name: 'Settings', icon: baseIconPath + 'setting.png', action: () => this.togglePopup('settings'), x: 0, y: 0, width: 0, height: 0, description: 'Open Settings' },
 		];
 	}
 
@@ -189,8 +190,9 @@ export class Toolbar {
 	}
 
 	private addHomeButton() {
+		const baseIconPath = import.meta.env.BASE_URL + 'icons/';
 		const img = new Image();
-		img.src = '/icons/home.png';
+		img.src = baseIconPath + 'home.png';
 		img.onload = () => {
 			this.ctx.drawImage(img, 8, 8, 36, 36);
 			this.ctx.strokeStyle = '#fff';
@@ -254,8 +256,9 @@ export class Toolbar {
 
 	private addCloseIcon() {
 		if (this.currentCloseIcon) { document.body.removeChild(this.currentCloseIcon); }
+		const baseIconPath = import.meta.env.BASE_URL + 'icons/';
 		const closeIcon = new Image();
-		closeIcon.src = '/icons/close.png';
+		closeIcon.src = baseIconPath + 'close.png';
 		closeIcon.style.position = 'fixed';
 		closeIcon.style.top = this.isMobile ? '56px' : '10px';
 		closeIcon.style.left = this.isMobile ? 'calc(50% + 162px)' : '400px';
