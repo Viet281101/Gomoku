@@ -4,11 +4,11 @@ import CustomBoard from './CustomBoard';
 
 const CustomGame: React.FC = () => {
 	const location = useLocation();
-	const { boardSize, player1, player2 } = location.state as { boardSize: number; player1: string; player2: string };
+	const { boardSize } = location.state as { boardSize: number };
 
 	return (
 		<div>
-			<CustomBoard boardSize={boardSize} player1={player1} player2={player2} />
+			<CustomBoard boardSize={boardSize} />
 		</div>
 	);
 };

@@ -1,25 +1,39 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface CustomBoardProps {
 	boardSize: number;
-	player1: string;
-	player2: string;
 }
 
-const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }) => {
+const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [board, setBoard] = useState<string[][]>(Array(boardSize).fill(null).map(() => Array(boardSize).fill('')));
 	const [currentTurn, setCurrentTurn] = useState<'black' | 'white'>('black');
 	const [winner, setWinner] = useState<string | null>(null);
 	const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
 	const [moveHistory, setMoveHistory] = useState<{ x: number, y: number, player: string }[]>([]);
+	const [canvasSize, setCanvasSize] = useState(600);
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		const updateCanvasSize = () => {
+			const screenWidth = window.innerWidth;
+			const screenHeight = window.innerHeight;
+			const size = Math.min(screenWidth, screenHeight) * (screenWidth < 768 ? 1 : 0.8);
+			setCanvasSize(size);
+		};
+
+		updateCanvasSize();
+		window.addEventListener('resize', updateCanvasSize);
+		return () => window.removeEventListener('resize', updateCanvasSize);
+	}, []);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (canvas) {
 			const ctx = canvas.getContext('2d');
 			if (ctx) {
-				const cellSize = canvas.width / (boardSize + 1);
+				const cellSize = canvasSize / (boardSize + 1);
 
 				const drawBoard = () => {
 					ctx.fillStyle = '#D2B48C';
@@ -83,7 +97,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 				drawHoverPiece();
 			}
 		}
-	}, [board, boardSize, hoveredCell, currentTurn, winner, moveHistory]);
+	}, [board, boardSize, hoveredCell, currentTurn, winner, moveHistory, canvasSize]);
 
 	const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
 		if (winner) return;
@@ -95,7 +109,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 		const x = event.clientX - rect.left;
 		const y = event.clientY - rect.top;
 
-		const cellSize = canvas.width / (boardSize + 1);
+		const cellSize = canvasSize / (boardSize + 1);
 		const col = Math.floor(x / cellSize) - 1;
 		const row = Math.floor(y / cellSize) - 1;
 
@@ -122,7 +136,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 		const x = event.clientX - rect.left;
 		const y = event.clientY - rect.top;
 
-		const cellSize = canvas.width / (boardSize + 1);
+		const cellSize = canvasSize / (boardSize + 1);
 		const col = Math.floor(x / cellSize) - 1;
 		const row = Math.floor(y / cellSize) - 1;
 
@@ -163,18 +177,27 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 		return false;
 	};
 
+	const handleQuit = () => {
+		navigate('/');
+	};
+
 	return (
-		<div>
-			<h2>{currentTurn === 'black' ? "Black's Turn" : "White's Turn"}</h2>
+		<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column' }}>
+			<h2>{currentTurn === 'black' ? "Black" : "White"}'s Turn</h2>
 			<canvas
 				ref={canvasRef}
-				width={600}
-				height={600}
+				width={canvasSize}
+				height={canvasSize}
 				onClick={handleCanvasClick}
 				onMouseMove={handleMouseMove}
 				onMouseOut={handleMouseOut}
 			></canvas>
-			{winner && <p>{winner} wins!</p>}
+			{winner && (
+				<div>
+					<p>{winner} wins!</p>
+					<button onClick={handleQuit}>Quit</button>
+				</div>
+			)}
 		</div>
 	);
 };

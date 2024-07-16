@@ -10,6 +10,7 @@ const OnlinePlay: React.FC = () => {
 
 	const currentUserId = 3;
 
+	const handleBack = () => { navigate('/'); };
 	const handlePlay = async () => {
 		setSearching(true);
 		setError(null);
@@ -55,7 +56,12 @@ const OnlinePlay: React.FC = () => {
 					</select>
 				</label>
 			</div>
-			{searching ? <p>Searching for opponents ...</p> : <button onClick={handlePlay}>PLAY</button>}
+			{searching ? <p>Searching for opponents ...</p> : (
+				<div>
+					<button onClick={handlePlay}>PLAY</button>
+					<button onClick={handleBack}>Back</button>
+				</div>
+			)}
 			{error && <p style={{ color: 'red' }}>{error}</p>}
 		</div>
 	);
