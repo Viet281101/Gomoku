@@ -3,11 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 interface CustomBoardProps {
 	boardSize: number;
-	player1: string;
-	player2: string;
 }
 
-const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }) => {
+const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [board, setBoard] = useState<string[][]>(Array(boardSize).fill(null).map(() => Array(boardSize).fill('')));
 	const [currentTurn, setCurrentTurn] = useState<'black' | 'white'>('black');
