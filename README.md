@@ -7,7 +7,7 @@ The game is typically played on a 15x15 grid, where players take turns placing b
 The objective is to be the first to align five stones in a row horizontally, vertically, or diagonally.
 The simplicity of the rules contrasts with the game's strategic depth, making it a challenging and engaging pastime.
 
-[![alt text](gomoku_frontend/public/vite.svg)](https://vitejs.dev/) **&** [![alt text](gomoku_frontend/public/typescript.svg)](https://www.typescriptlang.org/) **&** [![alt text](gomoku_frontend/public/image.png)](https://www.djangoproject.com/)
+[![alt text](gomoku_frontend/public/vite.svg)](https://vitejs.dev/) **&** [![alt text](gomoku_frontend/public/react.svg)](https://react.dev/)  **&** [![alt text](gomoku_frontend/public/typescript.svg)](https://www.typescriptlang.org/) **&** [![alt text](gomoku_frontend/public/image.png)](https://www.djangoproject.com/)
 
 
 ![preview_gomoku_online](https://github.com/user-attachments/assets/f574619d-11ff-4de5-aecb-84f7d9cb0c89)
