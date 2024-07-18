@@ -1,11 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { findBestMoveMinimax } from './Minimax';
+import { findBestMoveMinimaxAlphaBeta } from './MinimaxAlphaBeta';
+import { mcts } from './MCTS';
 
 interface CustomBoardProps {
 	boardSize: number;
+	player1: string;
+	player2: string;
 }
 
-const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize }) => {
+const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [board, setBoard] = useState<string[][]>(Array(boardSize).fill(null).map(() => Array(boardSize).fill('')));
 	const [currentTurn, setCurrentTurn] = useState<'black' | 'white'>('black');
@@ -36,6 +41,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize }) => {
 				const cellSize = canvasSize / (boardSize + 1);
 
 				const drawBoard = () => {
+					ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before drawing
 					ctx.fillStyle = '#D2B48C';
 					ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -99,6 +105,54 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize }) => {
 		}
 	}, [board, boardSize, hoveredCell, currentTurn, winner, moveHistory, canvasSize]);
 
+	useEffect(() => {
+		if (currentTurn !== 'black' && currentTurn !== 'white') return;
+
+		if (winner) return;
+
+		if ((currentTurn === 'black' && player1 !== 'Human') || (currentTurn === 'white' && player2 !== 'Human')) {
+			const aiMove = getAIMove();
+			if (aiMove) {
+				makeMove(aiMove.x, aiMove.y);
+			}
+		}
+	}, [currentTurn]);
+
+	const getAIMove = () => {
+		if (currentTurn === 'black' && player1 !== 'Human') {
+			if (player1 === 'Minimax') {
+				return findBestMoveMinimax(board);
+			} else if (player1 === 'Minimax Alphabeta') {
+				return findBestMoveMinimaxAlphaBeta(board);
+			} else if (player1 === 'Monte Carlo Tree Search') {
+				return mcts(board);
+			}
+		} else if (currentTurn === 'white' && player2 !== 'Human') {
+			if (player2 === 'Minimax') {
+				return findBestMoveMinimax(board);
+			} else if (player2 === 'Minimax Alphabeta') {
+				return findBestMoveMinimaxAlphaBeta(board);
+			} else if (player2 === 'Monte Carlo Tree Search') {
+				return mcts(board);
+			}
+		}
+		return null;
+	};
+
+	const makeMove = (col: number, row: number) => {
+		const newBoard = board.map((r, rowIndex) =>
+			r.map((cell, colIndex) => (rowIndex === row && colIndex === col ? (currentTurn === 'black' ? 'X' : 'O') : cell))
+		);
+		setBoard(newBoard);
+		const newMoveHistory = [...moveHistory, { x: col, y: row, player: currentTurn }];
+		setMoveHistory(newMoveHistory);
+		if (checkWinner(newBoard, currentTurn === 'black' ? 'X' : 'O', row, col)) {
+			setWinner(currentTurn);
+		} else {
+			setCurrentTurn(currentTurn === 'black' ? 'white' : 'black');
+		}
+	};
+
 	const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
 		if (winner) return;
 
@@ -113,18 +167,8 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize }) => {
 		const col = Math.floor(x / cellSize) - 1;
 		const row = Math.floor(y / cellSize) - 1;
 
-		if (col >= 0 && col < boardSize && row >= 0 && row < boardSize && board[row][col] === '') {
-			const newBoard = board.map((r, rowIndex) =>
-				r.map((cell, colIndex) => (rowIndex === row && colIndex === col ? (currentTurn === 'black' ? 'X' : 'O') : cell))
-			);
-			setBoard(newBoard);
-			const newMoveHistory = [...moveHistory, { x: col, y: row, player: currentTurn }];
-			setMoveHistory(newMoveHistory);
-			if (checkWinner(newBoard, currentTurn === 'black' ? 'X' : 'O', row, col)) {
-				setWinner(currentTurn);
-			} else {
-				setCurrentTurn(currentTurn === 'black' ? 'white' : 'black');
-			}
+		if (col >= 0 && col < boardSize && row >= 0 && row < boardSize && board[row][col] === '' && ((currentTurn === 'black' && player1 === 'Human') || (currentTurn === 'white' && player2 === 'Human'))) {
+			makeMove(col, row);
 		}
 	};
 
@@ -191,6 +235,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize }) => {
 				onClick={handleCanvasClick}
 				onMouseMove={handleMouseMove}
 				onMouseOut={handleMouseOut}
+				style={{ border: '1px solid black' }}
 			></canvas>
 			{winner && (
 				<div>

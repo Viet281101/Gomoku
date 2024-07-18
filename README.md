@@ -65,5 +65,6 @@ python manage.py runserver
 - Use `npm` to debug:
 ```bash
 cd gomoku_frontend/
+npm install
 npm run dev
 ```
