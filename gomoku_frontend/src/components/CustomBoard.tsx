@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { findBestMoveMinimax } from './Minimax';
 import { findBestMoveMinimaxAlphaBeta } from './MinimaxAlphaBeta';
 import { mcts } from './MCTS';
 
@@ -41,7 +40,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 				const cellSize = canvasSize / (boardSize + 1);
 
 				const drawBoard = () => {
-					ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before drawing
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
 					ctx.fillStyle = '#D2B48C';
 					ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -106,32 +105,45 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 	}, [board, boardSize, hoveredCell, currentTurn, winner, moveHistory, canvasSize]);
 
 	useEffect(() => {
-		if (currentTurn !== 'black' && currentTurn !== 'white') return;
-
-		if (winner) return;
-
-		if ((currentTurn === 'black' && player1 !== 'Human') || (currentTurn === 'white' && player2 !== 'Human')) {
-			const aiMove = getAIMove();
-			if (aiMove) {
-				makeMove(aiMove.x, aiMove.y);
+		const makeAIMove = async () => {
+			if ((currentTurn === 'black' && player1 !== 'Human') || (currentTurn === 'white' && player2 !== 'Human')) {
+				const aiMove = await getAIMove();
+				if (aiMove) {
+					makeMove(aiMove.x, aiMove.y);
+				}
 			}
-		}
+		};
+		makeAIMove();
 	}, [currentTurn]);
 
-	const getAIMove = () => {
+	const getAIMove = async () => {
 		if (currentTurn === 'black' && player1 !== 'Human') {
 			if (player1 === 'Minimax') {
-				return findBestMoveMinimax(board);
+				return new Promise<{ x: number, y: number }>((resolve) => {
+					const worker = new Worker(new URL('./minimaxWorker.ts', import.meta.url));
+					worker.postMessage({ board, depth: 2, player: 'X' });
+					worker.onmessage = (event) => {
+						resolve(event.data);
+						worker.terminate();
+					};
+				});
 			} else if (player1 === 'Minimax Alphabeta') {
-				return findBestMoveMinimaxAlphaBeta(board);
+				return findBestMoveMinimaxAlphaBeta(board, 2, 'X');
 			} else if (player1 === 'Monte Carlo Tree Search') {
 				return mcts(board);
 			}
 		} else if (currentTurn === 'white' && player2 !== 'Human') {
 			if (player2 === 'Minimax') {
-				return findBestMoveMinimax(board);
+				return new Promise<{ x: number, y: number }>((resolve) => {
+					const worker = new Worker(new URL('./minimaxWorker.ts', import.meta.url));
+					worker.postMessage({ board, depth: 2, player: 'O' });
+					worker.onmessage = (event) => {
+						resolve(event.data);
+						worker.terminate();
+					};
+				});
 			} else if (player2 === 'Minimax Alphabeta') {
-				return findBestMoveMinimaxAlphaBeta(board);
+				return findBestMoveMinimaxAlphaBeta(board, 2, 'O');
 			} else if (player2 === 'Monte Carlo Tree Search') {
 				return mcts(board);
 			}

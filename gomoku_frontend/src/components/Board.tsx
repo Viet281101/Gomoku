@@ -227,7 +227,8 @@ const Board: React.FC<BoardProps> = ({ boardSize, playerColor, gameId, gameData 
 			{winner && (
 				<div>
 					<p>{winner} wins!</p>
-					<button onClick={handleQuit}>Quit</button>
+					<button className="px-6 py-3 text-2xl text-white bg-red-600 rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-transform transform hover:scale-105"
+					onClick={handleQuit}>Quit</button>
 				</div>
 			)}
 		</div>
