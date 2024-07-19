@@ -63,7 +63,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 						row.forEach((cell, x) => {
 							if (cell !== '') {
 								ctx.beginPath();
-								ctx.arc((x + 1) * cellSize, (y + 1) * cellSize, cellSize / 2.5, 0, 2 * Math.PI);
+								ctx.arc((x + 1) * cellSize, (y + 1) * cellSize, cellSize / 2.2, 0, 2 * Math.PI);
 								ctx.fillStyle = cell === 'X' ? 'black' : 'white';
 								ctx.fill();
 								ctx.stroke();
@@ -71,7 +71,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 								const moveIndex = moveHistory.findIndex(move => move.x === x && move.y === y);
 								if (moveIndex !== -1) {
 									ctx.fillStyle = cell === 'X' ? 'white' : 'black';
-									ctx.font = `${cellSize / 3}px Arial`;
+									ctx.font = `${cellSize / 2.5}px Arial`;
 									ctx.textAlign = 'center';
 									ctx.textBaseline = 'middle';
 									ctx.fillText((moveIndex + 1).toString(), (x + 1) * cellSize, (y + 1) * cellSize);
@@ -87,7 +87,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 						ctx.arc(
 							(hoveredCell.x + 1) * cellSize,
 							(hoveredCell.y + 1) * cellSize,
-							cellSize / 2.5,
+							cellSize / 2.2,
 							0,
 							2 * Math.PI
 						);
