@@ -17,7 +17,7 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 # Read ALLOWED_HOSTS from environment variable and split by comma
 # ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 ALLOWED_HOSTS = ['gomoku-3tty.onrender.com', 'localhost']
-print(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+# print(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
 
 # Application definition
 

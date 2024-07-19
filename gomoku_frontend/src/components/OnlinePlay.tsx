@@ -9,13 +9,14 @@ const OnlinePlay: React.FC = () => {
 	const navigate = useNavigate();
 
 	const currentUserId = 3;
+	const backendUrl = "https://gomoku-3tty.onrender.com";
 
 	const handleBack = () => { navigate('/'); };
 	const handlePlay = async () => {
 		setSearching(true);
 		setError(null);
 		try {
-			const response = await axios.post('/api/games/find_or_create/', {
+			const response = await axios.post(`${backendUrl}/api/games/find_or_create/`, {
 				player: currentUserId
 			});
 
@@ -31,7 +32,7 @@ const OnlinePlay: React.FC = () => {
 
 	const checkGameStatus = async (gameId: number, playerColor: string) => {
 		try {
-			const response = await axios.get(`/api/games/${gameId}/check_status/`);
+			const response = await axios.get(`${backendUrl}/api/games/${gameId}/check_status/`);
 			if (response.data.status === 'ready') {
 				navigate('/online/game', { state: { boardSize: 15, playerColor, gameId } });
 			} else {
