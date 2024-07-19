@@ -1,1 +1,1 @@
-web: gunicorn gomoku_backend.wsgi
+web: gunicorn gomoku_backend.wsgi:application --bind 0.0.0.0:$PORT

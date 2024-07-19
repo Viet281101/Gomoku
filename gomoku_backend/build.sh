@@ -3,16 +3,15 @@
 # Install dependencies
 pip install -r requirements.txt
 
-# Run migrations
-echo "Running migrations..."
-python manage.py makemigrations game
+# Run migrations for built-in apps
+echo "Running initial migrations..."
 python manage.py migrate
 
-# Check if migrations ran successfully
-if [ $? -ne 0 ]; then
-	echo "Migrations failed. Exiting."
-	exit 1
-fi
+# Make and run migrations for the game app
+echo "Making migrations for game app..."
+python manage.py makemigrations game
+echo "Running migrations for game app..."
+python manage.py migrate game
 
 # Create default users
 echo "Creating default users..."
