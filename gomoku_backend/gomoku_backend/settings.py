@@ -44,7 +44,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
 	"http://localhost:5173",
-	"https://your-frontend-app.onrender.com",  # Thêm frontend của bạn nếu deploy trên Render
+	"https://viet281101.github.io",
 ]
 
 CORS_ALLOW_CREDENTIALS = True

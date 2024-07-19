@@ -10,7 +10,7 @@ The simplicity of the rules contrasts with the game's strategic depth, making it
 [![alt text](gomoku_frontend/public/vite.svg)](https://vitejs.dev/) **&** [![alt text](gomoku_frontend/public/react.svg)](https://react.dev/)  **&** [![alt text](gomoku_frontend/public/typescript.svg)](https://www.typescriptlang.org/) **&** ![alt text](gomoku_frontend/public/tailwind.svg) **&** [![alt text](gomoku_frontend/public/django.png)](https://www.djangoproject.com/)
 
 
-![demo_gomoku](https://github.com/user-attachments/assets/af65e4d5-6405-4276-9267-65bdfd25f165)
+![demo_gomoku](https://github.com/user-attachments/assets/1543c009-8801-4a7f-9d6e-1e783f69d5cb)
 
 ### Install & Debug
 
