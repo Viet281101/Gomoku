@@ -8,7 +8,7 @@ const OnlinePlay: React.FC = () => {
 	const [error, setError] = useState<string | null>(null);
 	const navigate = useNavigate();
 
-	const currentUserId = 3;
+	const currentUserId = 1;
 	const backendUrl = "https://gomoku-3tty.onrender.com";
 
 	const handleBack = () => { navigate('/'); };
