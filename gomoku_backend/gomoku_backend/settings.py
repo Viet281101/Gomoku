@@ -14,7 +14,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-7!2=x$ahz)a4mgfm3fqlt
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+# Read ALLOWED_HOSTS from environment variable and split by comma
+# ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+ALLOWED_HOSTS = ['gomoku-3tty.onrender.com', 'localhost']
 print(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
 
 # Application definition
