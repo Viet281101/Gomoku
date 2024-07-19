@@ -213,9 +213,13 @@ const Board: React.FC<BoardProps> = ({ boardSize, playerColor, gameId, gameData 
 	};
 
 	return (
-		<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column' }}>
-			<h2>{`You're ${playerColor.charAt(0).toUpperCase() + playerColor.slice(1)}`}</h2>
-			<h2>{currentTurn === 'black' ? "Black" : "White"}'s Turn</h2>
+		<div className="flex flex-col justify-center items-center min-h-screen">
+			<h2 className="text-2xl font-bold mb-4">
+				{`You're ${playerColor.charAt(0).toUpperCase() + playerColor.slice(1)}`}
+			</h2>
+			<h2 className="text-2xl font-bold mb-4">
+				{currentTurn === 'black' ? "Black" : "White"}'s Turn
+			</h2>
 			<canvas
 				ref={canvasRef}
 				width={canvasSize}
@@ -223,12 +227,17 @@ const Board: React.FC<BoardProps> = ({ boardSize, playerColor, gameId, gameData 
 				onClick={handleCanvasClick}
 				onMouseMove={handleMouseMove}
 				onMouseOut={handleMouseOut}
+				className="border border-black shadow-md"
 			></canvas>
 			{winner && (
-				<div>
-					<p>{winner} wins!</p>
-					<button className="px-6 py-3 text-2xl text-white bg-red-600 rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-transform transform hover:scale-105"
-					onClick={handleQuit}>Quit</button>
+				<div className="mt-4 text-center">
+					<p className="text-xl font-semibold">{winner} wins!</p>
+					<button
+						onClick={handleQuit}
+						className="mt-2 px-4 py-2 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-transform transform hover:scale-105"
+					>
+						Quit
+					</button>
 				</div>
 			)}
 		</div>

@@ -238,8 +238,10 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 	};
 
 	return (
-		<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column' }}>
-			<h2>{currentTurn === 'black' ? "Black" : "White"}'s Turn</h2>
+		<div className="flex flex-col justify-center items-center min-h-screen">
+			<h2 className="text-2xl font-bold mb-4">
+				{currentTurn === 'black' ? "Black" : "White"}'s Turn
+			</h2>
 			<canvas
 				ref={canvasRef}
 				width={canvasSize}
@@ -247,12 +249,17 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 				onClick={handleCanvasClick}
 				onMouseMove={handleMouseMove}
 				onMouseOut={handleMouseOut}
-				style={{ border: '1px solid black' }}
+				className="border border-black shadow-md"
 			></canvas>
 			{winner && (
-				<div>
-					<p>{winner} wins!</p>
-					<button onClick={handleQuit}>Quit</button>
+				<div className="mt-4 text-center">
+					<p className="text-xl font-semibold">{winner} wins!</p>
+					<button
+						onClick={handleQuit}
+						className="mt-2 px-4 py-2 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-transform transform hover:scale-105"
+					>
+						Quit
+					</button>
 				</div>
 			)}
 		</div>
