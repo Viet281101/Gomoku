@@ -63,7 +63,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 						row.forEach((cell, x) => {
 							if (cell !== '') {
 								ctx.beginPath();
-								ctx.arc((x + 1) * cellSize, (y + 1) * cellSize, cellSize / 3, 0, 2 * Math.PI);
+								ctx.arc((x + 1) * cellSize, (y + 1) * cellSize, cellSize / 2.5, 0, 2 * Math.PI);
 								ctx.fillStyle = cell === 'X' ? 'black' : 'white';
 								ctx.fill();
 								ctx.stroke();
@@ -87,7 +87,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 						ctx.arc(
 							(hoveredCell.x + 1) * cellSize,
 							(hoveredCell.y + 1) * cellSize,
-							cellSize / 3,
+							cellSize / 2.5,
 							0,
 							2 * Math.PI
 						);
@@ -253,7 +253,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 			></canvas>
 			{winner && (
 				<div className="mt-4 text-center">
-					<p className="text-xl font-semibold">{winner} wins!</p>
+					<p className="text-xl font-semibold">{winner.toUpperCase()} wins!</p>
 					<button
 						onClick={handleQuit}
 						className="mt-2 px-4 py-2 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-transform transform hover:scale-105"
