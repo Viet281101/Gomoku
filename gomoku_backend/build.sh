@@ -1,13 +1,17 @@
 #!/bin/bash
 
-# Install dependencies
+set -e
+
+echo "Installing dependencies..."
 pip install -r requirements.txt
 
-# Run migrations
+echo "Running migrations..."
 python manage.py migrate
 
-# Create default users
+echo "Creating default users..."
 python manage.py create_default_users
 
-# Collect static files
+echo "Collecting static files..."
 python manage.py collectstatic --noinput
+
+echo "Build completed"
