@@ -5,6 +5,7 @@ pip install -r requirements.txt
 
 # Run migrations
 echo "Running migrations..."
+python manage.py makemigrations game
 python manage.py migrate
 
 # Check if migrations ran successfully
