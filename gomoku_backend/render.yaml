@@ -1,14 +1,20 @@
+databases:
+  - name: gomoku_db
+    plan: free
+    databaseName: gomoku
+    user: gomoku_user
+
 services:
-	- type: web
-		plan: free
-		name: gomoku_backend
-		runtime: docker
-		buildCommand: "./build.sh"
-		startCommand: "gunicorn gomoku_backend.wsgi"
-		envVars:
-		- key: DATABASE_URL
-			fromDatabase:
-			name: gomoku_db
-			property: connectionString
-		- key: SECRET_KEY
-			generateValue: true
+  - type: web
+    name: gomoku_backend
+    env: python
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn gomoku_backend.wsgi"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gomoku_db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
