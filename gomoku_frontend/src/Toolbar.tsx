@@ -11,8 +11,10 @@ export class Toolbar {
 	private currentCloseIcon: HTMLImageElement | null;
 	private homeButtonRect!: { x: number, y: number, width: number, height: number };
 	private tooltip: HTMLDivElement;
+	private navigate: (path: string) => void;
 
-	constructor() {
+	constructor(navigate: (path: string) => void) {
+		this.navigate = navigate;
 		this.isMobile = this.checkIfMobile();
 		this.setupCanvas();
 		this.buttons = this.createButtons();
@@ -119,7 +121,7 @@ export class Toolbar {
 				cursor = 'pointer'; foundButton = { name: 'Home', description: 'Return to Home' };
 			}
 			this.canvas.style.cursor = cursor;
-			if (foundButton) {
+			if (foundButton && !this.isMobile) {
 				this.tooltip.innerHTML = `${foundButton.name}\n\n${foundButton.description}`;
 				this.tooltip.style.left = `${e.clientX + 10}px`;
 				this.tooltip.style.top = `${e.clientY + 10}px`;
@@ -137,13 +139,9 @@ export class Toolbar {
 		const mouseX = 'clientX' in e ? e.clientX : e.touches[0].clientX;
 		const mouseY = 'clientY' in e ? e.clientY : e.touches[0].clientY;
 		this.buttons.forEach(button => {
-			if (this.isInside(mouseX, mouseY, button)) {
-				button.action();
-			}
+			if (this.isInside(mouseX, mouseY, button)) { button.action(); }
 		});
-		if (this.isInside(mouseX, mouseY, this.homeButtonRect)) {
-			window.location.href = '/';
-		}
+		if (this.isInside(mouseX, mouseY, this.homeButtonRect)) { this.navigate('/'); }
 	}
 
 	private handleDocumentClick(e: MouseEvent | TouchEvent) {
