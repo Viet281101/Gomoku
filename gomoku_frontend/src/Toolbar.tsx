@@ -220,7 +220,7 @@ export class Toolbar {
 		popupContainer.id = id;
 		popupContainer.style.position = 'absolute';
 		popupContainer.style.top = this.isMobile ? '50px' : '0';
-		popupContainer.style.left = this.isMobile ? '50%' : '238px';
+		popupContainer.style.left = this.isMobile ? '50%' : '234px';
 		popupContainer.style.transform = 'translateX(-50%)';
 		popupContainer.style.width = '370px';
 		popupContainer.style.height = '100%';
@@ -237,7 +237,7 @@ export class Toolbar {
 
 		const titleElement = document.createElement('h3');
 		titleElement.style.position = 'absolute';
-		titleElement.style.top = '-10px';
+		titleElement.style.top = '2px';
 		titleElement.style.left = '50%';
 		titleElement.style.transform = 'translateX(-50%)';
 		titleElement.style.zIndex = '1001';

@@ -7,10 +7,11 @@ const Game: React.FC = () => {
 	const location = useLocation();
 	const { boardSize, playerColor, gameId } = location.state as { boardSize: number; playerColor: 'black' | 'white'; gameId: number };
 	const [gameData, setGameData] = useState(null);
+	const backendUrl = "https://gomoku-3tty.onrender.com";
 
 	useEffect(() => {
 		const fetchGameData = async () => {
-			const response = await axios.get(`/api/games/${gameId}/`);
+			const response = await axios.get(`${backendUrl}/api/games/${gameId}/`);
 			setGameData(response.data);
 		};
 
@@ -18,7 +19,7 @@ const Game: React.FC = () => {
 		const intervalId = setInterval(fetchGameData, 2000);
 
 		return () => clearInterval(intervalId);
-	}, [gameId]);
+	}, [gameId, backendUrl]);
 
 	return (
 		<div>

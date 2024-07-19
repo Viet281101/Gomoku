@@ -252,14 +252,16 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 				className="border border-black shadow-md"
 			></canvas>
 			{winner && (
-				<div className="mt-4 text-center">
-					<p className="text-xl font-semibold">{winner.toUpperCase()} wins!</p>
-					<button
-						onClick={handleQuit}
-						className="mt-2 px-4 py-2 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-transform transform hover:scale-105"
-					>
-						Quit
-					</button>
+				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+					<div className="bg-white p-8 rounded shadow-md text-center">
+						<p className="text-xl font-semibold mb-4">{winner.toUpperCase()} wins!</p>
+						<button
+							onClick={handleQuit}
+							className="px-4 py-2 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-transform transform hover:scale-105"
+						>
+							Quit
+						</button>
+					</div>
 				</div>
 			)}
 		</div>
