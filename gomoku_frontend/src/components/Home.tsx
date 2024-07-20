@@ -5,7 +5,11 @@ const Home: React.FC = () => {
 	const navigate = useNavigate();
 	const goToOnlinePlay = () => { navigate('/online'); };
 	const goToCustomPlay = () => { navigate('/custom'); };
-	const handleQuit = () => { window.close(); };
+	const handleQuit = () => {
+		if (window.confirm('To close the tab, please use the close button on your browser.')) {
+			window.close();
+		}
+	};
 
 	return (
 		<div className="min-h-screen flex flex-col items-center justify-center p-4">

@@ -14,6 +14,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 	const [board, setBoard] = useState<string[][]>(Array(boardSize).fill(null).map(() => Array(boardSize).fill('')));
 	const [currentTurn, setCurrentTurn] = useState<'black' | 'white'>('black');
 	const [winner, setWinner] = useState<string | null>(null);
+	const [showWinnerPopup, setShowWinnerPopup] = useState<boolean>(false);
 	const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
 	const [moveHistory, setMoveHistory] = useState<{ x: number, y: number, player: string }[]>([]);
 	const [canvasSize, setCanvasSize] = useState(600);
@@ -63,7 +64,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 						row.forEach((cell, x) => {
 							if (cell !== '') {
 								ctx.beginPath();
-								ctx.arc((x + 1) * cellSize, (y + 1) * cellSize, cellSize / 2.2, 0, 2 * Math.PI);
+								ctx.arc((x + 1) * cellSize, (y + 1) * cellSize, cellSize / 2.4, 0, 2 * Math.PI);
 								ctx.fillStyle = cell === 'X' ? 'black' : 'white';
 								ctx.fill();
 								ctx.stroke();
@@ -87,7 +88,7 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 						ctx.arc(
 							(hoveredCell.x + 1) * cellSize,
 							(hoveredCell.y + 1) * cellSize,
-							cellSize / 2.2,
+							cellSize / 2.4,
 							0,
 							2 * Math.PI
 						);
@@ -115,6 +116,12 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 		};
 		makeAIMove();
 	}, [currentTurn]);
+
+	useEffect(() => {
+		if (winner) {
+			setShowWinnerPopup(true);
+		}
+	}, [winner]);
 
 	const getAIMove = async () => {
 		if (currentTurn === 'black' && player1 !== 'Human') {
@@ -237,6 +244,20 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 		navigate('/');
 	};
 
+	const handleClose = () => {
+		setShowWinnerPopup(false);
+	};
+
+	const handleSave = () => {
+		const canvas = canvasRef.current;
+		if (canvas) {
+			const link = document.createElement('a');
+			link.href = canvas.toDataURL('image/png');
+			link.download = 'gomoku_board.png';
+			link.click();
+		}
+	};
+
 	return (
 		<div className="flex flex-col justify-center items-center min-h-screen">
 			<h2 className="text-2xl font-bold mb-4">
@@ -251,16 +272,31 @@ const CustomBoard: React.FC<CustomBoardProps> = ({ boardSize, player1, player2 }
 				onMouseOut={handleMouseOut}
 				className="border border-black shadow-md"
 			></canvas>
-			{winner && (
+			{showWinnerPopup && winner && (
 				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
 					<div className="bg-white p-8 rounded shadow-md text-center">
 						<p className="text-xl font-semibold mb-4">{winner.toUpperCase()} wins!</p>
-						<button
-							onClick={handleQuit}
-							className="px-4 py-2 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-transform transform hover:scale-105"
-						>
-							Quit
-						</button>
+						<p className="text-md mb-4">Total Moves: {moveHistory.length}</p>
+						<div className="flex justify-center space-x-4">
+							<button
+								onClick={handleClose}
+								className="px-4 py-2 bg-gray-600 text-white font-semibold rounded-md shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-transform transform hover:scale-105"
+							>
+								Close
+							</button>
+							<button
+								onClick={handleSave}
+								className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-transform transform hover:scale-105"
+							>
+								Save
+							</button>
+							<button
+								onClick={handleQuit}
+								className="px-4 py-2 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-transform transform hover:scale-105"
+							>
+								Quit
+							</button>
+						</div>
 					</div>
 				</div>
 			)}
