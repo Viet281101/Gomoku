@@ -10,6 +10,7 @@ class Game(models.Model):
 	player_X = models.ForeignKey(User, related_name='player_X', on_delete=models.CASCADE)
 	player_O = models.ForeignKey(User, related_name='player_O', on_delete=models.CASCADE, null=True, blank=True)
 	move_history = models.JSONField(default=list)
+	show_winner_popup = models.BooleanField(default=True)
 
 	def __str__(self):
 		return f"Game {self.id} - Current Turn: {self.current_turn}"

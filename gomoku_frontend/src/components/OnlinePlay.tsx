@@ -22,6 +22,7 @@ const OnlinePlay: React.FC = () => {
 
 			const gameId = response.data.game.id;
 			const playerColor = response.data.player_color;
+			await axios.patch(`${backendUrl}/api/games/${gameId}/update_show_winner_popup/`, { show_winner_popup: false });
 			checkGameStatus(gameId, playerColor);
 		} catch (error: any) {
 			console.error(error);

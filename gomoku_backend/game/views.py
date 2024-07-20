@@ -46,7 +46,7 @@ class GameViewSet(viewsets.ModelViewSet):
 	def move(self, request, pk=None):
 		game = self.get_object()
 		move = request.data.get('move')
-		logger.debug(f"Move data received: {move}")
+		# logger.debug(f"Move data received: {move}")
 		x, y = move.get('x'), move.get('y')
 		player = move.get('player')
 
@@ -58,11 +58,20 @@ class GameViewSet(viewsets.ModelViewSet):
 
 		game.board[y][x] = player
 		game.move_history.append({'x': x, 'y': y, 'player': player})
-		
+
 		if self.check_winner(game.board, player):
 			game.winner = player
+			game.show_winner_popup = True
 
 		game.current_turn = 'O' if player == 'X' else 'X'
+		game.save()
+		return Response(GameSerializer(game).data)
+
+	@action(detail=True, methods=['patch'])
+	def update_show_winner_popup(self, request, pk=None):
+		game = self.get_object()
+		show_winner_popup = request.data.get('show_winner_popup')
+		game.show_winner_popup = show_winner_popup
 		game.save()
 		return Response(GameSerializer(game).data)
 
