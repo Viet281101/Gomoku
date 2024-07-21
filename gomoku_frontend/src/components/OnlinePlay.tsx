@@ -25,7 +25,7 @@ const OnlinePlay: React.FC = () => {
 			await axios.patch(`${backendUrl}/api/games/${gameId}/update_show_winner_popup/`, { show_winner_popup: false });
 			checkGameStatus(gameId, playerColor);
 		} catch (error: any) {
-			console.error(error);
+			console.error('Error in handlePlay:', error);
 			setError(error.response?.data?.error || 'An unexpected error occurred');
 			setSearching(false);
 		}
@@ -40,7 +40,7 @@ const OnlinePlay: React.FC = () => {
 				setTimeout(() => checkGameStatus(gameId, playerColor), 2000);
 			}
 		} catch (error: any) {
-			console.error(error);
+			console.error('Error in checkGameStatus:', error);
 			setError('An unexpected error occurred');
 			setSearching(false);
 		}

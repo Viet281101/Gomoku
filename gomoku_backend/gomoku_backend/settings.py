@@ -46,6 +46,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
 	"http://localhost:5173",
+    "http://localhost:4173",
 	"https://viet281101.github.io",
 ]
 
